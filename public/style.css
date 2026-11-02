@@ -1,0 +1,1190 @@
+/* ==========================================================================
+   Repo Pilot Pro · Premium Design System (Light & Dark Theme)
+   Linear / Raycast / Modern SaaS Inspired Aesthetic
+   ========================================================================== */
+
+/* ==========================================================================
+   Repo Pilot Pro · Premium Dark Navy SaaS Design System
+   Exact match to the reference dashboard interface
+   ========================================================================== */
+
+:root, html.light {
+  /* Light Theme Palette */
+  --bg-body: #f8fafc;
+  --bg-sidebar: #f1f5f9;
+  --bg-surface: #ffffff;
+  --bg-surface-subtle: #f8fafc;
+  --bg-surface-elevated: #ffffff;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f1f5f9;
+  
+  --border-subtle: #e2e8f0;
+  --border-muted: #cbd5e1;
+  --border-highlight: #2563eb;
+  
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  
+  --glass-header: rgba(255, 255, 255, 0.9);
+  --glass-modal: #ffffff;
+  --modal-overlay: rgba(15, 23, 42, 0.45);
+  
+  --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+  --card-shadow-hover: 0 8px 24px -4px rgba(15, 23, 42, 0.08);
+  --elevated-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.1);
+
+  --scroll-track: #f1f5f9;
+  --scroll-thumb: #cbd5e1;
+  --scroll-thumb-hover: #94a3b8;
+
+  --accent-primary: #2563eb;
+  --accent-hover: #1d4ed8;
+
+  /* Priority Badges Light */
+  --badge-p1-bg: #fff1f2;
+  --badge-p1-text: #e11d48;
+  --badge-p1-border: #fecdd3;
+
+  --badge-p2-bg: #fffbeb;
+  --badge-p2-text: #d97706;
+  --badge-p2-border: #fde68a;
+
+  --badge-p3-bg: #eff6ff;
+  --badge-p3-text: #2563eb;
+  --badge-p3-border: #bfdbfe;
+
+  --badge-p4-bg: #f8fafc;
+  --badge-p4-text: #64748b;
+  --badge-p4-border: #e2e8f0;
+
+  color-scheme: light;
+}
+
+html.dark {
+  /* Deep Dark Navy / Obsidian Palette (Matches Reference Image) */
+  --bg-body: #080D1A;
+  --bg-sidebar: #060914;
+  --bg-surface: #0E162B;
+  --bg-surface-subtle: #111B34;
+  --bg-surface-elevated: #152243;
+  --bg-card: #0F1932;
+  --bg-card-hover: #142244;
+  
+  --border-subtle: #162446;
+  --border-muted: #1E3160;
+  --border-highlight: #2563eb;
+  
+  --text-primary: #F8FAFC;
+  --text-secondary: #CBD5E1;
+  --text-muted: #94A3B8;
+  
+  --glass-header: rgba(8, 13, 26, 0.92);
+  --glass-modal: #0E162B;
+  --modal-overlay: rgba(0, 0, 0, 0.8);
+  
+  --card-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+  --card-shadow-hover: 0 10px 30px -4px rgba(0, 0, 0, 0.7);
+  --elevated-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9);
+
+  --scroll-track: #060914;
+  --scroll-thumb: #1A284D;
+  --scroll-thumb-hover: #293E77;
+
+  --accent-primary: #2563eb;
+  --accent-hover: #1d4ed8;
+
+  /* Priority Badges Dark */
+  --badge-p1-bg: rgba(239, 68, 68, 0.18);
+  --badge-p1-text: #f87171;
+  --badge-p1-border: rgba(239, 68, 68, 0.35);
+
+  --badge-p2-bg: rgba(245, 158, 11, 0.18);
+  --badge-p2-text: #fbbf24;
+  --badge-p2-border: rgba(245, 158, 11, 0.35);
+
+  --badge-p3-bg: rgba(59, 130, 246, 0.18);
+  --badge-p3-text: #60a5fa;
+  --badge-p3-border: rgba(59, 130, 246, 0.35);
+
+  --badge-p4-bg: rgba(148, 163, 184, 0.14);
+  --badge-p4-text: #94a3b8;
+  --badge-p4-border: rgba(148, 163, 184, 0.25);
+
+  /* Calendar Colors Dark */
+  --cal-cell-bg: #0F1932;
+  --cal-cell-border: #162446;
+  --cal-cell-hover: #142244;
+  --cal-cell-other: rgba(9, 14, 28, 0.5);
+  --cal-today-border: #2563eb;
+  --cal-today-bg: rgba(37, 99, 235, 0.15);
+
+  color-scheme: dark;
+}
+
+/* ==========================================================================
+   Base & Reset & Viewport-Locked Canvas
+   ========================================================================== */
+html, body {
+  height: 100%;
+  height: 100dvh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden !important;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 15.2px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Global Font Enforcement: Pure Inter across the entire project */
+*, *::before, *::after, html, body, input, button, select, textarea, optgroup {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+}
+
+/* Monospace font exception for code & commit hashes */
+code, pre, kbd, samp, .font-mono, .code-snippet-box {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+}
+
+/* Micro-Text Scaling for Balanced Legibility at 100% Display Zoom */
+.text-\[9px\] {
+  font-size: 0.72rem !important;
+  line-height: 1rem !important;
+}
+.text-\[10px\] {
+  font-size: 0.78rem !important;
+  line-height: 1.12rem !important;
+}
+.text-\[11px\] {
+  font-size: 0.83rem !important;
+  line-height: 1.2rem !important;
+}
+
+/* High Contrast Slate Text in Dark Mode for Effortless Reading */
+html.dark .text-slate-400 {
+  color: #94A3B8 !important;
+}
+html.dark .text-slate-500 {
+  color: #94A3B8 !important;
+}
+
+body {
+  background-color: var(--bg-body);
+  color: var(--text-primary);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Prevent scroll chaining and elastic bouncing */
+.overflow-y-auto, .overflow-x-auto {
+  overscroll-behavior: contain;
+}
+
+/* Ultra-Thin Modern SaaS Scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(51, 65, 85, 0.4) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(51, 65, 85, 0.4);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.65);
+}
+
+/* ==========================================================================
+   Header & Glassmorphism
+   ========================================================================== */
+.glass-header {
+  background: var(--glass-header);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border-subtle);
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.glass-modal {
+  background: var(--glass-modal);
+  border: 1px solid var(--border-muted);
+  box-shadow: var(--elevated-shadow);
+}
+
+/* ==========================================================================
+   Project Cards (Grid View)
+   ========================================================================== */
+.project-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 1rem;
+  box-shadow: var(--card-shadow);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.project-card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-muted);
+  transform: translateY(-2px);
+  box-shadow: var(--card-shadow-hover);
+}
+
+.stale-card {
+  border-color: rgba(239, 68, 68, 0.5) !important;
+  box-shadow: 0 0 16px -4px rgba(239, 68, 68, 0.25) !important;
+}
+
+/* ==========================================================================
+   Priority Badges
+   ========================================================================== */
+.badge-p1 {
+  background: var(--badge-p1-bg);
+  color: var(--badge-p1-text);
+  border: 1px solid var(--badge-p1-border);
+}
+
+.badge-p2 {
+  background: var(--badge-p2-bg);
+  color: var(--badge-p2-text);
+  border: 1px solid var(--badge-p2-border);
+}
+
+.badge-p3 {
+  background: var(--badge-p3-bg);
+  color: var(--badge-p3-text);
+  border: 1px solid var(--badge-p3-border);
+}
+
+.badge-p4 {
+  background: var(--badge-p4-bg);
+  color: var(--badge-p4-text);
+  border: 1px solid var(--badge-p4-border);
+}
+
+/* ==========================================================================
+   Health Score Badges
+   ========================================================================== */
+.health-pill-A {
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.health-pill-B {
+  background: rgba(59, 130, 246, 0.12);
+  color: #3b82f6;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.health-pill-C {
+  background: rgba(245, 158, 11, 0.12);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.health-pill-F {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* ==========================================================================
+   Custom Checkbox
+   ========================================================================== */
+.task-checkbox {
+  appearance: none;
+  width: 1.15rem;
+  height: 1.15rem;
+  border: 1.5px solid var(--border-muted);
+  border-radius: 0.375rem;
+  background-color: transparent;
+  display: inline-grid;
+  place-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.task-checkbox:hover {
+  border-color: #3b82f6;
+  background-color: rgba(59, 130, 246, 0.08);
+}
+
+.task-checkbox:checked {
+  background-color: #10b981;
+  border-color: #10b981;
+}
+
+.task-checkbox:checked::before {
+  content: "";
+  width: 0.65rem;
+  height: 0.65rem;
+  clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+  transform: scale(1);
+  background-color: white;
+}
+
+/* ==========================================================================
+   Mention & Hash Tags
+   ========================================================================== */
+.mention-tag {
+  background: rgba(139, 92, 246, 0.12);
+  color: #8b5cf6;
+  border-radius: 4px;
+  padding: 2px 7px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.hash-tag {
+  background: rgba(20, 184, 166, 0.12);
+  color: #14b8a6;
+  border-radius: 4px;
+  padding: 2px 7px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   Kanban Board
+   ========================================================================== */
+.kanban-col {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 1rem;
+  box-shadow: var(--card-shadow);
+  min-height: 540px;
+  transition: all 0.2s ease;
+}
+
+.kanban-task-card {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.85rem;
+  padding: 12px;
+  box-shadow: var(--card-shadow);
+  transition: all 0.18s ease;
+}
+
+.kanban-task-card:hover {
+  border-color: #3b82f6;
+  transform: translateY(-2px);
+  box-shadow: var(--card-shadow-hover);
+}
+
+/* ==========================================================================
+   Pomodoro Widget
+   ========================================================================== */
+.pomodoro-box {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 1.25rem;
+  box-shadow: var(--card-shadow);
+}
+
+/* ==========================================================================
+   Calendar Grid & Drag and Drop Styles
+   ========================================================================== */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.calendar-day-header {
+  text-align: center;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  padding: 8px 0;
+}
+
+.calendar-day-cell {
+  background: var(--cal-cell-bg);
+  border: 1px solid var(--cal-cell-border);
+  min-height: 120px;
+  border-radius: 12px;
+  padding: 8px;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  position: relative;
+  user-select: none;
+}
+
+.calendar-day-cell:hover {
+  background: var(--cal-cell-hover);
+  border-color: var(--border-muted);
+}
+
+.calendar-day-cell.other-month {
+  opacity: 0.35;
+  background: var(--cal-cell-other);
+}
+
+.calendar-day-cell.is-today {
+  border: 2px solid var(--cal-today-border);
+  background: var(--cal-today-bg);
+  box-shadow: 0 0 16px -2px rgba(59, 130, 246, 0.25);
+}
+
+/* Drag Over Highlighting on Calendar Day */
+.calendar-day-cell.is-drop-target {
+  background: rgba(59, 130, 246, 0.12) !important;
+  border: 2px dashed #3b82f6 !important;
+  transform: scale(1.02);
+  box-shadow: 0 0 20px -2px rgba(59, 130, 246, 0.45);
+  z-index: 10;
+}
+
+.calendar-task-pill {
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: grab;
+  transition: transform 0.12s ease, opacity 0.12s ease, box-shadow 0.12s ease;
+  user-select: none;
+}
+
+.calendar-task-pill:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.calendar-task-pill:active,
+.calendar-task-pill.is-dragging {
+  cursor: grabbing !important;
+  opacity: 0.45;
+  transform: scale(0.96);
+}
+
+/* Unscheduled Drag Shelf */
+.unscheduled-drag-pill {
+  font-size: 0.85rem;
+  cursor: grab;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.unscheduled-drag-pill:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--card-shadow);
+  border-color: #3b82f6;
+}
+
+.unscheduled-drag-pill:active,
+.unscheduled-drag-pill.is-dragging {
+  cursor: grabbing !important;
+  opacity: 0.45;
+  transform: scale(0.96);
+}
+
+/* ==========================================================================
+   Milestone Cards
+   ========================================================================== */
+.milestone-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 1rem;
+  padding: 16px;
+  box-shadow: var(--card-shadow);
+  transition: all 0.2s ease;
+}
+
+.milestone-card:hover {
+  border-color: var(--border-muted);
+  box-shadow: var(--card-shadow-hover);
+  transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   Sidebar Navigation Styles (Matches Reference Mockup)
+   ========================================================================== */
+.sidebar-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.9rem;
+  border-radius: 0.75rem;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: all 0.15s ease;
+  user-select: none;
+  cursor: pointer;
+}
+
+.sidebar-nav-item:hover {
+  background-color: var(--bg-surface-subtle);
+  color: var(--text-primary);
+}
+
+.sidebar-nav-item.active {
+  background-color: #2563EB !important;
+  color: #FFFFFF !important;
+  font-weight: 600;
+  box-shadow: 0 4px 14px -2px rgba(37, 99, 235, 0.45);
+}
+
+.sidebar-nav-item.active i,
+.sidebar-nav-item.active svg {
+  color: #FFFFFF !important;
+  stroke: #FFFFFF !important;
+}
+
+/* ==========================================================================
+   Weekly Timetable Schedule (Calendar View in Mockup)
+   ========================================================================== */
+.schedule-timetable {
+  display: grid;
+  grid-template-columns: 60px repeat(7, minmax(0, 1fr));
+  border: 1px solid var(--border-subtle);
+  border-radius: 1rem;
+  overflow: hidden;
+  background-color: var(--bg-surface);
+}
+
+.schedule-header-cell {
+  background-color: var(--bg-surface-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+  border-right: 1px solid var(--border-subtle);
+  padding: 10px 6px;
+  text-align: center;
+}
+
+.schedule-time-cell {
+  border-bottom: 1px solid var(--border-subtle);
+  border-right: 1px solid var(--border-subtle);
+  padding: 8px 4px;
+  font-size: 0.75rem;
+  font-family: monospace;
+  color: var(--text-muted);
+  text-align: center;
+  background-color: var(--bg-surface-subtle);
+}
+
+.schedule-day-slot {
+  border-bottom: 1px solid var(--border-subtle);
+  border-right: 1px solid var(--border-subtle);
+  min-height: 52px;
+  padding: 4px;
+  position: relative;
+  transition: background 0.15s ease;
+}
+
+.schedule-day-slot:hover {
+  background-color: var(--bg-surface-subtle);
+}
+
+.schedule-task-block {
+  padding: 6px 8px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.2;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.schedule-task-block:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.1);
+}
+
+/* Code Preview Pane (Code TODO view) */
+.code-preview-pane {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 1rem;
+  padding: 1.25rem;
+  box-shadow: var(--card-shadow);
+}
+
+.code-snippet-box {
+  background-color: #050811;
+  border: 1px solid #14203D;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.84rem;
+  color: #E2E8F0;
+  overflow-x: auto;
+}
+
+/* Pulse animation */
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.65; }
+}
+
+.overdue-glow {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid #ef4444;
+  color: #ef4444;
+  animation: pulse-subtle 2s infinite ease-in-out;
+}
+
+/* Daily Focus Neon Glows & SVG Precision Chart Glows */
+.glow-cyan {
+  filter: drop-shadow(0 0 6px rgba(6, 182, 212, 0.45));
+}
+.glow-blue {
+  filter: drop-shadow(0 0 6px rgba(37, 99, 235, 0.45));
+}
+.glow-purple {
+  filter: drop-shadow(0 0 6px rgba(139, 92, 246, 0.45));
+}
+.glow-orange {
+  filter: drop-shadow(0 0 6px rgba(249, 115, 22, 0.45));
+}
+.glow-ring {
+  filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.65));
+}
+
+/* ==========================================================================
+   Kanban & Calendar Drag-and-Drop & Reordering Styles
+   ========================================================================== */
+.kanban-card-draggable {
+  cursor: grab;
+  transition: transform 0.15s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+  user-select: none;
+}
+
+.kanban-card-draggable:active {
+  cursor: grabbing;
+}
+
+.kanban-card-draggable.is-dragging {
+  cursor: grabbing !important;
+  opacity: 0.35 !important;
+  transform: scale(0.96) !important;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.5) !important;
+  border-color: #38bdf8 !important;
+}
+
+.kanban-card-draggable.drop-indicator-top {
+  border-top: 3px solid #38bdf8 !important;
+  box-shadow: 0 -4px 12px -2px rgba(56, 189, 248, 0.6) !important;
+  transform: translateY(2px);
+}
+
+.kanban-card-draggable.drop-indicator-bottom {
+  border-bottom: 3px solid #38bdf8 !important;
+  box-shadow: 0 4px 12px -2px rgba(56, 189, 248, 0.6) !important;
+  transform: translateY(-2px);
+}
+
+.kanban-column-body {
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+  min-height: 120px;
+}
+
+.kanban-column-body.col-drag-over {
+  background-color: rgba(37, 99, 235, 0.08) !important;
+  border: 1.5px dashed rgba(56, 189, 248, 0.6) !important;
+  border-radius: 0.75rem;
+}
+
+.calendar-cell-drop {
+  transition: all 0.15s ease;
+}
+
+.calendar-cell-drop.is-drop-target {
+  background: rgba(56, 189, 248, 0.16) !important;
+  border: 2px dashed #38bdf8 !important;
+  transform: scale(1.03);
+  box-shadow: 0 0 18px rgba(56, 189, 248, 0.45) !important;
+  z-index: 10;
+}
+
+.calendar-draggable-task {
+  cursor: grab;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+  user-select: none;
+}
+
+.calendar-draggable-task:active {
+  cursor: grabbing;
+}
+
+.calendar-draggable-task.is-dragging {
+  cursor: grabbing !important;
+  opacity: 0.4 !important;
+  transform: scale(0.96) !important;
+}
+
+.calendar-draggable-task.drop-indicator-top {
+  border-top: 2px solid #3b82f6 !important;
+  box-shadow: 0 -4px 12px -2px rgba(59, 130, 246, 0.6) !important;
+  transform: translateY(2px);
+}
+
+.calendar-draggable-task.drop-indicator-bottom {
+  border-bottom: 2px solid #3b82f6 !important;
+  box-shadow: 0 4px 12px -2px rgba(59, 130, 246, 0.6) !important;
+  transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   Comprehensive Light Theme Design System
+   Sleek, Modern SaaS Interface with Perfect Visual Contrast & Hierarchy
+   ========================================================================== */
+
+html.light {
+  color-scheme: light;
+}
+
+html.light body {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+/* Header & Glassmorphism in Light Mode */
+html.light header {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+}
+
+html.light header .tracking-tight.text-white {
+  color: #0f172a !important;
+}
+
+/* Sidebars in Light Mode */
+html.light aside,
+html.light #main-sidebar {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+
+html.light aside .text-white {
+  color: #0f172a !important;
+}
+
+html.light .sidebar-nav-item {
+  color: #475569 !important;
+}
+
+html.light .sidebar-nav-item:hover {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+html.light .sidebar-nav-item.active {
+  background-color: #2563eb !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px -2px rgba(37, 99, 235, 0.35) !important;
+}
+
+html.light .sidebar-nav-item.active svg,
+html.light .sidebar-nav-item.active i,
+html.light .sidebar-nav-item.active * {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+/* Main Views Canvas */
+html.light main,
+html.light #view-container-home,
+html.light #view-container-grid,
+html.light #view-container-kanban,
+html.light #view-container-calendar,
+html.light #view-container-focus,
+html.light #view-container-scanner,
+html.light #view-container-settings,
+html.light #view-container-analytics,
+html.light #view-container-insights {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+/* Deep Dark Background Utilities -> Light Canvas (#f8fafc) */
+html.light .bg-\[\#070d1a\],
+html.light .bg-\[\#0B0F17\],
+html.light .bg-\[\#080C14\],
+html.light .bg-\[\#070b12\],
+html.light .bg-\[\#060914\],
+html.light .bg-\[\#060A12\],
+html.light .bg-\[\#0a1220\],
+html.light .bg-\[\#090e1a\],
+html.light .bg-\[\#0a101f\],
+html.light .bg-\[\#0b1322\],
+html.light .bg-\[\#0b1322\]\/95,
+html.light .bg-\[\#0d1629\],
+html.light .bg-\[\#0D1527\],
+html.light .bg-\[\#0B101D\],
+html.light .bg-\[\#0e1629\],
+html.light .bg-\[\#0e1726\],
+html.light .bg-\[\#050811\] {
+  background-color: #f8fafc !important;
+}
+
+/* Elevated Cards, Panels & Containers -> Crisp White (#ffffff) */
+html.light .bg-\[\#111827\],
+html.light .bg-\[\#182234\],
+html.light .bg-\[\#1E293B\],
+html.light .bg-\[\#1F2C42\],
+html.light .bg-\[\#0F172A\],
+html.light .bg-\[\#0e1727\],
+html.light .bg-\[\#131D33\],
+html.light .bg-\[\#141f33\],
+html.light .bg-\[\#10192a\],
+html.light .bg-\[\#121c2e\],
+html.light .bg-\[\#121c2f\],
+html.light .bg-\[\#15233e\],
+html.light .bg-\[\#121B2C\],
+html.light .bg-\[\#121f3a\],
+html.light .bg-\[\#111A2E\],
+html.light .bg-\[\#111a2f\],
+html.light .bg-\[\#141E33\],
+html.light .bg-\[\#162238\],
+html.light .bg-\[\#15223a\],
+html.light .bg-\[\#1c2c49\],
+html.light .bg-\[\#172545\],
+html.light .bg-\[\#111e38\],
+html.light .bg-\[\#111c34\],
+html.light .bg-\[\#1b273d\],
+html.light .bg-\[\#17223b\],
+html.light .bg-\[\#0E162B\],
+html.light .project-card,
+html.light .milestone-card,
+html.light .pomodoro-box,
+html.light .code-preview-pane {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+}
+
+/* Interactive Hover States in Light Mode */
+html.light .hover\:bg-\[\#141f33\]:hover,
+html.light .hover\:bg-\[\#1E293B\]:hover,
+html.light .hover\:bg-\[\#1F2C42\]:hover,
+html.light .hover\:bg-\[\#1B2945\]:hover,
+html.light .hover\:bg-\[\#131f33\]:hover,
+html.light .hover\:bg-\[\#15233e\]:hover,
+html.light .hover\:bg-\[\#182642\]:hover,
+html.light .hover\:bg-slate-800:hover,
+html.light .hover\:bg-slate-700:hover {
+  background-color: #f1f5f9 !important;
+}
+
+/* Border Mappings in Light Mode */
+html.light .border-\[\#1F293D\],
+html.light .border-\[\#1E293B\],
+html.light .border-\[\#1b2840\],
+html.light .border-\[\#172338\],
+html.light .border-\[\#162446\],
+html.light .border-\[\#16233e\],
+html.light .border-\[\#182643\],
+html.light .border-\[\#1c2c48\],
+html.light .border-\[\#1e2e4a\],
+html.light .border-\[\#141f38\],
+html.light .border-\[\#162138\],
+html.light .border-\[\#1a2745\],
+html.light .border-\[\#1a2847\],
+html.light .border-\[\#1F2C45\],
+html.light .border-\[\#1a283f\],
+html.light .border-\[\#0b1322\],
+html.light .border-\[\#273a5a\],
+html.light .border-\[\#16233d\],
+html.light .border-\[\#1f2d45\],
+html.light .border-\[\#1d2b45\],
+html.light .border-\[\#14203D\],
+html.light .border-slate-800,
+html.light .border-slate-700 {
+  border-color: #e2e8f0 !important;
+}
+
+/* Typography Hierarchy in Light Mode */
+html.light .text-white:not(
+  .bg-blue-600 *, .bg-blue-600,
+  .bg-blue-500 *, .bg-blue-500,
+  .bg-emerald-600 *, .bg-emerald-600,
+  .bg-rose-600 *, .bg-rose-600,
+  .bg-red-600 *, .bg-red-600,
+  .bg-indigo-600 *, .bg-indigo-600,
+  [class*="bg-gradient"] *, [class*="bg-gradient"],
+  .sidebar-nav-item.active *, .sidebar-nav-item.active,
+  button[type="submit"] *, button[type="submit"],
+  .badge-p1 *, .badge-p2 *, .badge-p3 *
+) {
+  color: #0f172a !important;
+}
+
+html.light .text-slate-100 {
+  color: #0f172a !important;
+}
+
+html.light .text-slate-200 {
+  color: #1e293b !important;
+}
+
+html.light .text-slate-300 {
+  color: #334155 !important;
+}
+
+html.light .text-slate-400 {
+  color: #64748b !important;
+}
+
+html.light .text-slate-500 {
+  color: #94a3b8 !important;
+}
+
+/* Retain Clean White Text on Action Buttons */
+html.light button.bg-blue-600,
+html.light button.bg-blue-500,
+html.light button.bg-gradient-to-r,
+html.light button[type="submit"],
+html.light .bg-gradient-to-tr,
+html.light .sidebar-nav-item.active {
+  color: #ffffff !important;
+}
+html.light button.bg-blue-600 *,
+html.light button.bg-blue-500 *,
+html.light button.bg-gradient-to-r *,
+html.light button[type="submit"] *,
+html.light .bg-gradient-to-tr *,
+html.light .sidebar-nav-item.active * {
+  color: #ffffff !important;
+}
+
+/* Inputs, Textareas & Selects in Light Mode */
+html.light input:not([type="checkbox"]):not([type="radio"]),
+html.light select,
+html.light textarea {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+html.light input::placeholder,
+html.light textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+html.light input:focus,
+html.light select:focus,
+html.light textarea:focus {
+  border-color: #2563eb !important;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.18) !important;
+}
+
+/* Kanban Board in Light Mode */
+html.light .kanban-col,
+html.light #kanban-col-backlog,
+html.light #kanban-col-todo,
+html.light #kanban-col-in-progress,
+html.light #kanban-col-review,
+html.light #kanban-col-done,
+html.light .kanban-column-body {
+  background-color: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+}
+
+html.light .kanban-card-draggable {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05) !important;
+}
+
+html.light .kanban-card-draggable:hover {
+  background-color: #ffffff !important;
+  border-color: #93c5fd !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Calendar & Weekly Schedule in Light Mode */
+html.light .calendar-day-cell {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+
+html.light .calendar-day-cell:hover {
+  background-color: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+}
+
+html.light .calendar-day-cell.other-month {
+  background-color: #f8fafc !important;
+  opacity: 0.65 !important;
+}
+
+html.light .calendar-day-cell.is-today {
+  border-color: #2563eb !important;
+  background-color: rgba(37, 99, 235, 0.06) !important;
+}
+
+html.light .schedule-timetable {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+
+html.light .schedule-header-cell,
+html.light .schedule-time-cell {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+  color: #64748b !important;
+}
+
+html.light .schedule-day-slot {
+  border-color: #e2e8f0 !important;
+}
+
+html.light .schedule-day-slot:hover {
+  background-color: #f1f5f9 !important;
+}
+
+/* Modals, Dialogs & Dropdowns in Light Mode */
+html.light #user-profile-dropdown,
+html.light .glass-modal,
+html.light [id$="-modal"] > div.relative,
+html.light [id$="-modal"] > div > div.bg-\[\#0B101D\],
+html.light [id$="-modal"] > div > div.bg-\[\#0E162B\],
+html.light [id$="-modal"] > div > div.bg-\[\#0e1726\] {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+  box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.15), 0 8px 10px -6px rgba(15, 23, 42, 0.1) !important;
+}
+
+/* Scrollbars in Light Mode */
+html.light ::-webkit-scrollbar-track {
+  background: #f1f5f9 !important;
+}
+html.light ::-webkit-scrollbar-thumb {
+  background: #cbd5e1 !important;
+}
+html.light ::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8 !important;
+}
+
+/* Project Radar Styles */
+.radar-project-pill {
+  transition: all 0.2s ease;
+  user-select: none;
+  cursor: pointer;
+}
+.radar-project-pill.active {
+  background-color: #2563eb !important;
+  color: #ffffff !important;
+  border-color: #3b82f6 !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+}
+.radar-tag-btn {
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+.radar-tag-btn.active {
+  background-color: rgba(6, 182, 212, 0.2) !important;
+  color: #67e8f9 !important;
+  border-color: rgba(6, 182, 212, 0.4) !important;
+}
+html.light .radar-tag-btn.active {
+  background-color: #e0f2fe !important;
+  color: #0369a1 !important;
+  border-color: #7dd3fc !important;
+}
+
+/* Projects Sub-View Switcher */
+.projects-subview-btn {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  cursor: pointer;
+}
+.projects-subview-btn.active {
+  background-color: #2563eb !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
+}
+html.light .projects-subview-btn {
+  color: #64748b;
+}
+html.light .projects-subview-btn:hover {
+  color: #0f172a;
+}
+html.light .projects-subview-btn.active {
+  background-color: #2563eb !important;
+  color: #ffffff !important;
+}
+
+/* Light Mode Radar Comprehensive Overrides */
+html.light #projects-subview-radar {
+  color: #0f172a;
+}
+html.light #projects-subview-radar .bg-\[\#0e1727\] {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+html.light #projects-subview-radar .bg-\[\#080C14\] {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+html.light #projects-subview-radar .border-\[\#1b2840\],
+html.light #projects-subview-radar .border-\[\#182338\],
+html.light #projects-subview-radar .border-\[\#1a2842\],
+html.light #projects-subview-radar .border-\[\#16233b\] {
+  border-color: #e2e8f0 !important;
+}
+html.light #projects-subview-radar .text-white {
+  color: #0f172a !important;
+}
+html.light #projects-subview-radar .text-slate-200 {
+  color: #1e293b !important;
+}
+html.light #projects-subview-radar .text-slate-300 {
+  color: #334155 !important;
+}
+html.light #projects-subview-radar .text-slate-400 {
+  color: #64748b !important;
+}
+html.light #projects-subview-radar input,
+html.light #projects-subview-radar select {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+html.light #projects-subview-radar .radar-project-pill:not(.active) {
+  background-color: #f1f5f9 !important;
+  color: #334155 !important;
+  border-color: #cbd5e1 !important;
+}
+html.light #projects-subview-radar .radar-tag-btn:not(.active) {
+  background-color: #f1f5f9 !important;
+  color: #475569 !important;
+  border-color: #cbd5e1 !important;
+}
+html.light #projects-subview-radar .bg-\[\#10192a\] {
+  background-color: #f1f5f9 !important;
+  color: #334155 !important;
+  border-color: #cbd5e1 !important;
+}
+
+
+
+
+

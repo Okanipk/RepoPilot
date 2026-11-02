@@ -1,0 +1,3002 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Repo Pilot · Çoklu Proje Geliştirici Komuta Merkezi</title>
+
+  <!-- Theme Init Script (Flicker-Free) -->
+  <script>
+    (function() {
+      const saved = localStorage.getItem('repopilot_theme') || localStorage.getItem('taskdeck_theme');
+      if (saved === 'light') {
+        document.documentElement.classList.remove('dark');
+        document.documentElement.classList.add('light');
+      } else {
+        document.documentElement.classList.add('dark');
+        document.documentElement.classList.remove('light');
+      }
+    })();
+  </script>
+
+  <!-- Tailwind CSS CDN with Forms & Container Plugins -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              500: '#1d72fe',
+              600: '#155dfc',
+              700: '#004ee6',
+              bgDark: '#070d19',
+              sidebarDark: '#0b1322',
+              cardDark: '#0e1726',
+              cardInner: '#131e33',
+              borderDark: '#1b283f',
+              borderLight: '#243452',
+            },
+            deck: {
+              base: '#0B0F17',
+              panel: '#111827',
+              surface: '#151D2C',
+              card: '#182234',
+              hover: '#1F2C42',
+              border: '#1F293D',
+              accent: '#38BDF8',
+              accentHover: '#0EA5E9',
+              p1: '#EF4444',
+              p2: '#F97316',
+              p3: '#38BDF8',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts: Inter (Global Typographic Engine) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    body {
+      background-color: var(--bg-body, #070d1a);
+      color: var(--text-primary, #e2e8f0);
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--scroll-track, #0a1120);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--scroll-thumb, #1e293b);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--scroll-thumb-hover, #334155);
+    }
+  </style>
+</head>
+<body class="h-screen h-[100dvh] antialiased flex flex-col selection:bg-blue-600 selection:text-white overflow-hidden m-0 p-0">
+
+  <!-- ======================================================== -->
+  <!-- TOP NAVIGATION BAR (Exact Match to User Mockup)          -->
+  <!-- ======================================================== -->
+  <header class="h-16 border-b border-[#172338] bg-[#0b1322]/95 backdrop-blur sticky top-0 z-40 px-5 flex items-center justify-between flex-shrink-0">
+    
+    <!-- Brand Logo -->
+    <div class="flex items-center gap-6 w-56">
+      <div class="flex items-center gap-3 cursor-pointer select-none" onclick="switchView('home')">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-sky-400 flex items-center justify-center shadow-lg shadow-blue-500/25">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+          </svg>
+        </div>
+        <span class="text-xl font-bold tracking-tight text-white">Repo<span class="text-blue-500">Pilot</span></span>
+      </div>
+    </div>
+
+    <!-- Center Search Bar -->
+    <div class="flex-1 max-w-xl mx-4">
+      <div class="relative flex items-center">
+        <span class="absolute left-3.5 text-slate-400 pointer-events-none">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.3-4.3"></path>
+          </svg>
+        </span>
+        <input 
+          id="global-search-input" 
+          oninput="handleGlobalSearch(this.value)" 
+          class="w-full h-10 pl-10 pr-12 rounded-xl bg-[#121c2e] border border-[#1e2e4a] text-sm text-slate-200 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all shadow-inner" 
+          placeholder="Proje, görev veya etiket ara..." 
+          type="text"
+        />
+        <button onclick="openCommandPalette()" type="button" class="absolute right-2.5 flex items-center hover:opacity-80 transition-opacity cursor-pointer">
+          <kbd class="px-2 py-0.5 text-[11px] font-semibold tracking-wider text-slate-400 bg-[#1a273e] hover:bg-[#223352] border border-[#273a5a] rounded-md transition-colors cursor-pointer">⌘ K</kbd>
+        </button>
+      </div>
+    </div>
+
+    <!-- Header Actions & User Profile -->
+    <div class="flex items-center gap-3 sm:gap-4">
+      
+      <!-- GitHub Status Pill -->
+      <div onclick="fetchProjects(true)" title="GitHub Senkronizasyonunu Yenile" class="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#121c2f] border border-[#1c2c48] text-xs cursor-pointer hover:border-blue-500/50 transition">
+        <svg class="w-4 h-4 text-slate-300" fill="currentColor" viewBox="0 0 24 24">
+          <path clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" fill-rule="evenodd"></path>
+        </svg>
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <div class="leading-tight text-left">
+          <p class="font-medium text-slate-200">GitHub</p>
+          <p id="header-sync-time" class="text-[10px] text-emerald-400 font-normal">Senkronize edildi <span class="text-slate-400">· 2 dk önce</span></p>
+        </div>
+      </div>
+
+      <!-- Mode Switcher (Demo / Live) -->
+      <div class="flex items-center bg-[#121c2e] p-1 rounded-xl border border-[#1e2e4a] text-xs">
+        <button id="btn-mode-demo" onclick="switchMode('demo')" class="px-2 py-0.5 font-medium rounded-lg transition-all text-xs flex items-center space-x-1">
+          <span>Demo</span>
+        </button>
+        <button id="btn-mode-live" onclick="switchMode('live')" class="px-2 py-0.5 font-medium rounded-lg transition-all text-xs flex items-center space-x-1">
+          <span>GitHub</span>
+        </button>
+      </div>
+
+      <!-- Theme Toggle -->
+      <button id="btn-theme-toggle" onclick="toggleTheme()" title="Açık / Koyu Tema" class="p-2 text-slate-400 hover:text-amber-400 hover:bg-[#131f33] rounded-lg transition">
+        <i id="icon-theme" data-lucide="sun" class="w-4 h-4"></i>
+      </button>
+
+      <!-- Quick Action: Task/Inbox with Badge -->
+      <button onclick="switchView('focus')" class="relative p-2 text-slate-400 hover:text-slate-200 hover:bg-[#131f33] rounded-lg transition" title="Odak Görevleri">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-4a2 2 0 00-2 2v0a2 2 0 01-2 2H8a2 2 0 01-2-2v0a2 2 0 00-2-2H4"></path>
+        </svg>
+        <span id="header-inbox-badge" class="absolute top-1 right-1 w-4 h-4 bg-rose-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-[#0b1322]">3</span>
+      </button>
+
+      <!-- Alert Bell & Dropdown Notification Center -->
+      <div class="relative">
+        <button onclick="toggleNotificationDropdown()" id="btn-notifications-toggle" class="p-2 text-slate-400 hover:text-slate-200 hover:bg-[#131f33] rounded-lg transition relative cursor-pointer" title="Bildirim Merkezi & Uyarılar">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+          </svg>
+          <span id="header-alert-ping" class="hidden absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+        </button>
+
+        <!-- Dropdown Menu -->
+        <div id="notifications-dropdown-menu" class="hidden absolute right-0 mt-2 w-80 bg-[#0f172a] border border-[#1e293b] rounded-2xl shadow-2xl p-3.5 z-50 text-xs space-y-2.5">
+          <div class="flex items-center justify-between pb-2 border-b border-[#1e293b]">
+            <span class="font-bold text-white flex items-center gap-1.5">
+              <i data-lucide="bell" class="w-3.5 h-3.5 text-blue-400"></i>
+              Bildirim Merkezi
+            </span>
+            <span id="notif-dropdown-count" class="px-2 py-0.5 rounded-full text-[10px] bg-blue-500/20 text-blue-300 font-bold">0 Uyarı</span>
+          </div>
+          <div id="notif-dropdown-list" class="space-y-1.5 max-h-56 overflow-y-auto pr-1">
+            <!-- Dynamically populated -->
+          </div>
+          <div class="pt-2 border-t border-[#1e293b] flex items-center justify-between">
+            <button onclick="switchView('settings'); if(typeof setSettingsTab==='function') setSettingsTab('notifications'); toggleNotificationDropdown();" class="text-blue-400 hover:underline text-[11px] font-medium cursor-pointer">
+              Ayarları Yapılandır →
+            </button>
+            <button onclick="toggleNotificationDropdown()" class="text-slate-400 hover:text-white text-[11px] cursor-pointer">
+              Kapat
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- User Profile Badge & Storage Pill -->
+      <div class="relative">
+        <div id="header-user-btn" onclick="toggleUserProfileDropdown()" class="flex items-center gap-2.5 pl-2 border-l border-[#1a283f] cursor-pointer hover:opacity-90 transition-opacity">
+          <div id="header-user-avatar" class="w-8 h-8 rounded-full ring-2 ring-blue-500/40 bg-gradient-to-tr from-blue-600 to-cyan-500 flex items-center justify-center text-xs font-bold text-white shadow-sm">
+            OI
+          </div>
+          <div class="hidden sm:block text-left">
+            <p id="header-user-name" class="text-xs font-semibold text-white leading-tight">Okan İpek</p>
+            <p id="header-user-storage-pill" class="text-[10px] text-emerald-400 flex items-center gap-1 font-mono">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span id="header-storage-text">Yerel JSON</span>
+            </p>
+          </div>
+          <svg class="w-3.5 h-3.5 text-slate-400 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7"></path>
+          </svg>
+        </div>
+
+        <!-- User Profile Dropdown Menu -->
+        <div id="user-profile-dropdown" class="hidden absolute right-0 mt-2 w-64 rounded-2xl bg-[#0F172A] border border-[#1E293B] shadow-2xl py-2 z-50 text-xs text-slate-200">
+          <div class="px-3.5 py-2.5 border-b border-[#1E293B]">
+            <p class="font-semibold text-white truncate" id="dropdown-user-fullname">Okan İpek</p>
+            <p class="text-[11px] text-slate-400 font-mono truncate" id="dropdown-user-username">@okan</p>
+          </div>
+
+          <div class="py-1 border-b border-[#1E293B]">
+            <button onclick="connectLocalJsonFile(); toggleUserProfileDropdown();" class="w-full px-3.5 py-2 text-left hover:bg-[#1E293B] flex items-center gap-2.5 text-slate-300 hover:text-white transition-colors cursor-pointer">
+              <i data-lucide="folder-check" class="w-4 h-4 text-emerald-400 shrink-0"></i>
+              <div>
+                <p class="font-medium">Yerel JSON Dosyası Bağla</p>
+                <p class="text-[10px] text-slate-400">Bilgisayardaki bir .json dosyasına anlık yaz</p>
+              </div>
+            </button>
+            <button onclick="exportDataAsJson(); toggleUserProfileDropdown();" class="w-full px-3.5 py-2 text-left hover:bg-[#1E293B] flex items-center gap-2.5 text-slate-300 hover:text-white transition-colors cursor-pointer">
+              <i data-lucide="download" class="w-4 h-4 text-cyan-400 shrink-0"></i>
+              <div>
+                <p class="font-medium">JSON Olarak İndir (Yedekle)</p>
+                <p class="text-[10px] text-slate-400">Tüm görev ve projeleri JSON dosyası yap</p>
+              </div>
+            </button>
+            <button onclick="document.getElementById('json-file-input').click(); toggleUserProfileDropdown();" class="w-full px-3.5 py-2 text-left hover:bg-[#1E293B] flex items-center gap-2.5 text-slate-300 hover:text-white transition-colors cursor-pointer">
+              <i data-lucide="upload" class="w-4 h-4 text-indigo-400 shrink-0"></i>
+              <div>
+                <p class="font-medium">JSON Dosyası İçe Aktar</p>
+                <p class="text-[10px] text-slate-400">Yedek JSON'dan verileri geri yükle</p>
+              </div>
+            </button>
+          </div>
+
+          <div class="pt-1">
+            <button onclick="switchView('settings'); toggleUserProfileDropdown();" class="w-full px-3.5 py-2 text-left hover:bg-[#1E293B] flex items-center gap-2.5 text-slate-300 hover:text-white transition-colors cursor-pointer">
+              <i data-lucide="settings" class="w-4 h-4 text-slate-400 shrink-0"></i>
+              <span>Ayarlar</span>
+            </button>
+            <button onclick="logoutUser(); toggleUserProfileDropdown();" class="w-full px-3.5 py-2 text-left hover:bg-rose-500/10 flex items-center gap-2.5 text-rose-400 hover:text-rose-300 transition-colors cursor-pointer">
+              <i data-lucide="log-out" class="w-4 h-4 text-rose-400 shrink-0"></i>
+              <span>Çıkış Yap</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile Menu Trigger -->
+      <button onclick="toggleMobileSidebar()" class="md:hidden p-2 rounded-xl bg-[#0E162B] text-slate-300 hover:text-white border border-[#162446]">
+        <i data-lucide="menu" class="w-5 h-5"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- BEGIN: MainLayoutWrapper -->
+  <div class="flex flex-1 overflow-hidden h-[calc(100vh-4rem)] h-[calc(100dvh-4rem)] min-h-0">
+    
+    <!-- BEGIN: LeftSidebar -->
+    <aside id="main-sidebar" class="w-64 bg-[#0a1220] border-r border-[#172338] flex flex-col justify-between p-3.5 hidden md:flex shrink-0">
+      
+      <!-- Main Nav Links -->
+      <nav aria-label="Ana Menü" class="space-y-1">
+        
+        <!-- Active link: Ana Sayfa -->
+        <button onclick="switchView('home')" id="side-nav-home" class="sidebar-nav-item active w-full text-left">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+          </svg>
+          <span class="text-sm font-medium">Ana Sayfa</span>
+        </button>
+
+        <!-- Projeler -->
+        <button onclick="switchView('grid')" id="side-nav-grid" class="sidebar-nav-item w-full text-left group">
+          <div class="flex items-center justify-between w-full">
+            <div class="flex items-center gap-3">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+              </svg>
+              <span class="text-sm font-medium">Projeler</span>
+            </div>
+            <span id="side-nav-grid-badge" class="px-1.5 py-0.2 text-[10px] font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30 rounded-full">RADAR</span>
+          </div>
+        </button>
+
+        <!-- Kanban -->
+        <button onclick="switchView('kanban')" id="side-nav-kanban" class="sidebar-nav-item w-full text-left">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"></path>
+          </svg>
+          <span class="text-sm font-medium">Kanban</span>
+        </button>
+
+        <!-- Takvim -->
+        <button onclick="switchView('calendar')" id="side-nav-calendar" class="sidebar-nav-item w-full text-left">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <rect height="18" rx="2" ry="2" width="18" x="3" y="4"></rect>
+            <line x1="16" x2="16" y1="2" y2="6"></line>
+            <line x1="8" x2="8" y1="2" y2="6"></line>
+            <line x1="3" x2="21" y1="10" y2="10"></line>
+          </svg>
+          <span class="text-sm font-medium">Takvim</span>
+        </button>
+
+        <!-- Günlük Odak -->
+        <button onclick="switchView('focus')" id="side-nav-focus" class="sidebar-nav-item w-full text-left">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"></circle>
+            <circle cx="12" cy="12" r="6"></circle>
+            <circle cx="12" cy="12" r="2"></circle>
+          </svg>
+          <span class="text-sm font-medium">Günlük Odak</span>
+        </button>
+
+        <!-- Kod İçi TODO -->
+        <button onclick="switchView('scanner')" id="side-nav-scanner" class="sidebar-nav-item w-full text-left">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <polyline points="16 18 22 12 16 6"></polyline>
+            <polyline points="8 6 2 12 8 18"></polyline>
+          </svg>
+          <span class="text-sm font-medium">Kod İçi TODO</span>
+        </button>
+
+        <!-- Analitik -->
+        <button onclick="switchView('analytics')" id="side-nav-analytics" class="sidebar-nav-item w-full text-left">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <line x1="18" x2="18" y1="20" y2="10"></line>
+            <line x1="12" x2="12" y1="20" y2="4"></line>
+            <line x1="6" x2="6" y1="20" y2="14"></line>
+          </svg>
+          <span class="text-sm font-medium">Analitik</span>
+        </button>
+
+        <!-- Ayarlar -->
+        <button onclick="switchView('settings')" id="side-nav-settings" class="sidebar-nav-item w-full text-left">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 00-1.51 1z"></path>
+          </svg>
+          <span class="text-sm font-medium">Ayarlar</span>
+        </button>
+      </nav>
+
+      <!-- Bottom Card: GitHub Connection Info -->
+      <div class="p-3 bg-[#111c2e] border border-[#1d2b45] rounded-xl flex items-center justify-between shadow-sm">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-black/40 flex items-center justify-center text-slate-300">
+            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+              <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"></path>
+            </svg>
+          </div>
+          <div>
+            <p class="text-xs font-semibold text-slate-200">GitHub Bağlı</p>
+            <p id="side-sync-time" class="text-[10px] text-slate-400">Son senkronizasyon<br/>2 dk önce</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <button onclick="fetchProjects(true)" title="Yenile" class="p-1 rounded bg-[#142244] hover:bg-[#1E3160] text-slate-300 hover:text-white transition-colors">
+            <i data-lucide="refresh-cw" class="w-3 h-3"></i>
+          </button>
+          <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
+        </div>
+      </div>
+    </aside>
+    <!-- END: LeftSidebar -->
+
+    <!-- MOBILE SIDEBAR OVERLAY & DRAWER -->
+    <div id="mobile-sidebar-overlay" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-black/75 z-40 hidden md:hidden backdrop-blur-sm transition-opacity"></div>
+    <div id="mobile-sidebar" class="fixed top-0 bottom-0 left-0 w-64 bg-[#060914] border-r border-[#162446] z-50 transform -translate-x-full transition-transform duration-200 md:hidden flex flex-col justify-between">
+      <div>
+        <div class="h-16 px-5 flex items-center justify-between border-b border-[#162446]">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
+              <i data-lucide="layers" class="w-4 h-4 text-white"></i>
+            </div>
+            <span class="font-bold text-base text-white">Repo<span class="text-blue-500">Pilot</span></span>
+          </div>
+          <button onclick="toggleMobileSidebar()" class="text-slate-400 hover:text-white p-1">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+        <nav class="p-3 space-y-1">
+          <button onclick="switchView('home'); toggleMobileSidebar();" class="sidebar-nav-item active w-full text-left">
+            <i data-lucide="home" class="w-4 h-4"></i>
+            <span>Ana Sayfa</span>
+          </button>
+          <button onclick="switchView('grid'); toggleMobileSidebar();" class="sidebar-nav-item w-full text-left">
+            <i data-lucide="folder" class="w-4 h-4"></i>
+            <span>Projeler</span>
+          </button>
+          <button onclick="switchView('kanban'); toggleMobileSidebar();" class="sidebar-nav-item w-full text-left">
+            <i data-lucide="kanban-square" class="w-4 h-4"></i>
+            <span>Kanban</span>
+          </button>
+          <button onclick="switchView('calendar'); toggleMobileSidebar();" class="sidebar-nav-item w-full text-left">
+            <i data-lucide="calendar" class="w-4 h-4"></i>
+            <span>Takvim</span>
+          </button>
+          <button onclick="switchView('focus'); toggleMobileSidebar();" class="sidebar-nav-item w-full text-left">
+            <i data-lucide="target" class="w-4 h-4"></i>
+            <span>Günlük Odak</span>
+          </button>
+          <button onclick="switchView('scanner'); toggleMobileSidebar();" class="sidebar-nav-item w-full text-left">
+            <i data-lucide="code-2" class="w-4 h-4"></i>
+            <span>Kod İçi TODO</span>
+          </button>
+          <button onclick="switchView('analytics'); toggleMobileSidebar();" class="sidebar-nav-item w-full text-left">
+            <i data-lucide="bar-chart-2" class="w-4 h-4"></i>
+            <span>Analitik</span>
+          </button>
+          <button onclick="switchView('settings'); toggleMobileSidebar();" class="sidebar-nav-item w-full text-left">
+            <i data-lucide="settings" class="w-4 h-4"></i>
+            <span>Ayarlar</span>
+          </button>
+        </nav>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- VIEWS VIEWPORT CONTAINER                                 -->
+    <!-- ======================================================== -->
+    <div id="views-viewport" class="flex-1 flex overflow-hidden w-full relative h-full min-h-0">
+
+      <!-- ======================================================== -->
+      <!-- VIEW 0: ANA SAYFA (Matches User Mockup Exactly)          -->
+      <!-- ======================================================== -->
+      <div id="view-container-home" class="flex-1 flex overflow-hidden w-full h-full">
+        
+        <!-- Center Main Content Column -->
+        <main class="flex-1 overflow-y-auto px-6 py-6 lg:px-8 space-y-6">
+          
+          <!-- Greeting & Overview Top Row -->
+          <section aria-label="Kullanıcı Karşılama" class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h1 class="text-2xl lg:text-3xl font-bold tracking-tight text-white flex items-center gap-2">
+                Merhaba Okan <span class="animate-pulse">👋</span>
+              </h1>
+              <p class="text-sm text-slate-400 mt-1">Bugün <span id="home-greeting-count" class="font-semibold text-white">3</span> önemli görevin var. Hadi başlayalım!</p>
+            </div>
+            <!-- Date & Weather Widget -->
+            <div class="flex items-center gap-5 text-right self-start md:self-auto">
+              <div>
+                <p id="home-date-string" class="text-sm font-semibold text-slate-200">28 Ekim 2026</p>
+                <p id="home-day-string" class="text-xs text-slate-400">Çarşamba</p>
+              </div>
+              <div class="flex items-center gap-2 pl-4 border-l border-[#1f2d45]">
+                <svg class="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                </svg>
+                <div class="text-left">
+                  <p class="text-sm font-bold text-white">18°C</p>
+                  <p class="text-[11px] text-slate-400">İstanbul</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Executive Project Radar & Audit Quick Banner -->
+          <section aria-label="Proje Denetim Radarı Özeti" class="p-4 rounded-2xl bg-gradient-to-r from-[#0d1b33] via-[#101e38] to-[#0d1627] border border-blue-500/30 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-lg relative overflow-hidden group">
+            <div class="absolute -right-8 -bottom-8 w-40 h-40 bg-blue-500/5 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="flex items-center gap-3.5 relative z-10">
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0 shadow-inner">
+                <svg class="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+              </div>
+              <div>
+                <div class="flex items-center gap-2">
+                  <h3 class="text-sm font-bold text-white tracking-tight">Proje Radarı: Hatalar, Öneriler & Fikir Havuzu</h3>
+                  <span id="home-radar-badge" class="px-2.5 py-0.5 text-[11px] font-bold text-amber-300 bg-amber-500/20 border border-amber-500/30 rounded-full flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+                    Canlı Denetim Aktif
+                  </span>
+                </div>
+                <p class="text-xs text-slate-300 mt-1">Tüm projelerinizin P1 kritik hataları, sağlık skorları (A+/B/C), mimari tavsiyeleri ve gelecek özellik fikirleri hazır.</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2.5 self-end md:self-auto relative z-10">
+              <button onclick="openProjectsRadarView()" class="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl text-xs font-semibold shadow-md hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer">
+                <span>Radarı & Fikirleri İncele</span>
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </button>
+            </div>
+          </section>
+
+          <!-- KPI Summary Cards (3 Cards Grid) -->
+          <section aria-label="İş Durum Özeti" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <!-- Card 1: Kritik İşler -->
+            <div onclick="switchView('kanban'); setPriorityFilter('p1');" class="bg-[#10192a] hover:bg-[#141f33] transition border border-rose-950/60 hover:border-rose-800/60 rounded-2xl p-4 flex items-center justify-between group cursor-pointer shadow-sm">
+              <div class="flex items-center gap-3.5">
+                <div class="w-11 h-11 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-500 flex items-center justify-center">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                  </svg>
+                </div>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm font-semibold text-slate-200">Kritik İşler</span>
+                    <span id="home-kpi-critical" class="px-2 py-0.5 text-xs font-bold text-white bg-rose-600 rounded-full">6</span>
+                  </div>
+                  <p class="text-xs text-slate-400 mt-0.5">Acil müdahale gerektiriyor</p>
+                </div>
+              </div>
+              <svg class="w-4 h-4 text-slate-500 group-hover:text-slate-300 group-hover:translate-x-0.5 transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </div>
+
+            <!-- Card 2: Geciken İşler -->
+            <div onclick="switchView('calendar');" class="bg-[#10192a] hover:bg-[#141f33] transition border border-amber-950/50 hover:border-amber-800/60 rounded-2xl p-4 flex items-center justify-between group cursor-pointer shadow-sm">
+              <div class="flex items-center gap-3.5">
+                <div class="w-11 h-11 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-500 flex items-center justify-center">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                </div>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm font-semibold text-slate-200">Geciken İşler</span>
+                    <span id="home-kpi-overdue" class="px-2 py-0.5 text-xs font-bold text-white bg-amber-600 rounded-full">3</span>
+                  </div>
+                  <p class="text-xs text-slate-400 mt-0.5">Son tarih geçti</p>
+                </div>
+              </div>
+              <svg class="w-4 h-4 text-slate-500 group-hover:text-slate-300 group-hover:translate-x-0.5 transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </div>
+
+            <!-- Card 3: Bugün Tamamlanacak -->
+            <div onclick="switchView('focus');" class="bg-[#10192a] hover:bg-[#141f33] transition border border-emerald-950/50 hover:border-emerald-800/60 rounded-2xl p-4 flex items-center justify-between group cursor-pointer shadow-sm">
+              <div class="flex items-center gap-3.5">
+                <div class="w-11 h-11 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M22 11.08V12a10 10 0 11-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                  </svg>
+                </div>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm font-semibold text-slate-200">Bugün Tamamlanacak</span>
+                    <span id="home-kpi-today" class="px-2 py-0.5 text-xs font-bold text-white bg-emerald-600 rounded-full">4</span>
+                  </div>
+                  <p class="text-xs text-slate-400 mt-0.5">Planlandığı gibi devam ediyor</p>
+                </div>
+              </div>
+              <svg class="w-4 h-4 text-slate-500 group-hover:text-slate-300 group-hover:translate-x-0.5 transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </div>
+          </section>
+
+          <!-- BEGIN: PriorityTasksSection -->
+          <section aria-label="Öncelikli Görevler" class="bg-[#0e1727] border border-[#1b2840] rounded-2xl p-5 space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <div class="w-7 h-7 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center">
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+                  </svg>
+                </div>
+                <div>
+                  <h2 class="text-base font-semibold text-white leading-tight">Öncelikli Görevler</h2>
+                  <p class="text-xs text-slate-400">Yapay zeka önerisiyle sıralandı</p>
+                </div>
+              </div>
+              <button onclick="switchView('kanban')" class="text-xs font-medium text-blue-400 hover:text-blue-300 flex items-center gap-1 transition">
+                Tümünü gör <span aria-hidden="true">→</span>
+              </button>
+            </div>
+            <!-- Task List Items Container -->
+            <div id="home-priority-tasks-container" class="space-y-2.5">
+              <!-- Dynamically populated or updated by renderHomePage() -->
+            </div>
+          </section>
+          <!-- END: PriorityTasksSection -->
+
+          <!-- BEGIN: ProjectsSection -->
+          <section aria-label="Projelerim" class="bg-[#0e1727] border border-[#1b2840] rounded-2xl p-5 space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <div class="w-7 h-7 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                    <polyline points="2 17 12 22 22 17"></polyline>
+                    <polyline points="2 12 12 17 22 12"></polyline>
+                  </svg>
+                </div>
+                <div>
+                  <h2 class="text-base font-semibold text-white leading-tight">Projelerim</h2>
+                  <p class="text-xs text-slate-400">Aktif projeler ve genel durum</p>
+                </div>
+              </div>
+              <button onclick="switchView('grid')" class="text-xs font-medium text-blue-400 hover:text-blue-300 flex items-center gap-1 transition">
+                Tüm projeler <span aria-hidden="true">→</span>
+              </button>
+            </div>
+            <!-- Project List Rows Container -->
+            <div id="home-projects-container" class="space-y-2">
+              <!-- Dynamically populated or updated by renderHomePage() -->
+            </div>
+          </section>
+          <!-- END: ProjectsSection -->
+
+        </main>
+        <!-- END: Center Main Content Column -->
+
+        <!-- BEGIN: RightSidebarPanel -->
+        <aside class="w-80 lg:w-96 bg-[#0a1220] border-l border-[#172338] p-5 space-y-6 overflow-y-auto hidden xl:block shrink-0">
+          
+          <!-- Widget 1: Günlük Odak (Pomodoro & Mini Tasks) -->
+          <section aria-label="Günlük Odak Paneli" class="bg-[#0e1727] border border-[#1b2840] rounded-2xl p-4 space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <circle cx="12" cy="12" r="6"></circle>
+                    <circle cx="12" cy="12" r="2"></circle>
+                  </svg>
+                </div>
+                <div>
+                  <h2 class="text-sm font-semibold text-white">Günlük Odak</h2>
+                  <p class="text-[11px] text-slate-400">Bugünün en önemli 3 görevi</p>
+                </div>
+              </div>
+              <button onclick="switchView('focus')" class="text-xs font-medium text-blue-400 hover:text-blue-300 flex items-center gap-1 transition">
+                Tümünü gör <span aria-hidden="true">→</span>
+              </button>
+            </div>
+
+            <!-- Pomodoro Timer Visual Component -->
+            <div class="p-3.5 bg-[#121c2e] border border-[#1c2c48] rounded-xl flex items-center justify-between gap-4">
+              <!-- Circular Ring & Timer -->
+              <div class="relative w-20 h-20 flex items-center justify-center shrink-0">
+                <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                  <path class="text-slate-800" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"></path>
+                  <path class="text-blue-500" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="75, 100" stroke-linecap="round" stroke-width="3"></path>
+                </svg>
+                <div class="absolute flex flex-col items-center justify-center text-center">
+                  <span id="home-pomodoro-timer-text" class="text-xs font-bold text-white tracking-tighter">25:00</span>
+                  <svg class="w-3.5 h-3.5 text-blue-400 fill-current mt-0.5" viewBox="0 0 24 24">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                  </svg>
+                </div>
+              </div>
+              <div class="flex-1">
+                <p class="text-xs text-slate-300 font-medium">Pomodoro Seansı</p>
+                <p class="text-[11px] text-slate-400 mb-2">25 dk Odaklanma</p>
+                <button onclick="startPomodoroFromHome()" class="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg shadow-sm transition flex items-center justify-center gap-1.5">
+                  <span>Odak Başlat</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- 3 Mini Focused Tasks -->
+            <div id="home-mini-tasks-container" class="space-y-2 pt-1">
+              <!-- Dynamically rendered -->
+            </div>
+          </section>
+
+          <!-- Widget 2: Bugünün Takvimi -->
+          <section aria-label="Günün Takvimi" class="bg-[#0e1727] border border-[#1b2840] rounded-2xl p-4 space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <rect height="18" rx="2" ry="2" width="18" x="3" y="4"></rect>
+                    <line x1="16" x2="16" y1="2" y2="6"></line>
+                    <line x1="8" x2="8" y1="2" y2="6"></line>
+                    <line x1="3" x2="21" y1="10" y2="10"></line>
+                  </svg>
+                </div>
+                <div>
+                  <h2 class="text-sm font-semibold text-white">Bugünün Takvimi</h2>
+                  <p id="home-cal-widget-date" class="text-[11px] text-slate-400">28 Ekim 2026 · Çarşamba</p>
+                </div>
+              </div>
+              <button onclick="switchView('calendar')" class="text-xs font-medium text-blue-400 hover:text-blue-300 flex items-center gap-1 transition">
+                Tümünü gör <span aria-hidden="true">→</span>
+              </button>
+            </div>
+
+            <!-- Vertical Schedule Timeline -->
+            <div id="home-timeline-container" class="relative pl-6 space-y-4 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-[#1f2d47]">
+              <!-- Timeline items -->
+            </div>
+          </section>
+
+          <!-- Widget 3: Son GitHub Hareketleri -->
+          <section aria-label="GitHub Aktiviteleri" class="bg-[#0e1727] border border-[#1b2840] rounded-2xl p-4 space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-slate-300" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"></path>
+                </svg>
+                <h2 class="text-sm font-semibold text-white">Son GitHub Hareketleri</h2>
+              </div>
+              <button onclick="fetchProjects(true)" class="text-xs font-medium text-blue-400 hover:text-blue-300 flex items-center gap-1 transition">
+                Tümünü gör <span aria-hidden="true">→</span>
+              </button>
+            </div>
+            <div id="home-github-activity-container" class="space-y-3 text-xs">
+              <!-- Dynamically populated or updated by renderHomePage() -->
+            </div>
+          </section>
+
+        </aside>
+        <!-- END: RightSidebarPanel -->
+
+      </div>
+      <!-- END: VIEW 0: ANA SAYFA -->
+
+      <!-- VIEW 1: PROJELER -->
+        <div id="view-container-grid" class="hidden flex-1 flex flex-col p-4 lg:p-5 gap-3 w-full h-full min-h-0 overflow-hidden bg-[#0B0F17]">
+          
+          <!-- Page Header -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-xl bg-[#111827] border border-[#1F293D] flex items-center justify-center text-blue-400 shadow-sm">
+                <i data-lucide="folder" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <h2 class="text-xl font-bold text-white tracking-tight flex items-center gap-2">
+                  <span>Projeler</span>
+                </h2>
+                <p class="text-xs text-slate-400 mt-0.5">Tüm projelerinizin durumunu, görevlerini ve teslimatlarını tek ekranda yönetin.</p>
+              </div>
+            </div>
+
+            <!-- Integrated Sub-View Switcher: [Proje Kartları] & [Hatalar & Fikirler] -->
+            <div class="flex items-center bg-[#0e1727] p-1 rounded-xl border border-[#1d2b45] shadow-inner gap-1">
+              <button 
+                id="btn-projects-subview-cards" 
+                onclick="switchProjectsSubView('cards')" 
+                class="projects-subview-btn active px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                <span>Proje Kartları</span>
+              </button>
+              <button 
+                id="btn-projects-subview-radar" 
+                onclick="switchProjectsSubView('radar')" 
+                class="projects-subview-btn px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white flex items-center gap-2 transition-all cursor-pointer">
+                <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                <span>Hatalar & Fikirler</span>
+                <span id="projects-radar-badge" class="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">RADAR</span>
+              </button>
+            </div>
+
+            <div class="flex items-center space-x-2">
+              <button onclick="fetchProjects(true)" class="px-3 py-1.5 rounded-xl bg-[#182234] hover:bg-[#1F2C42] text-slate-300 hover:text-white border border-[#1F293D] text-xs font-medium flex items-center space-x-1.5 transition-colors">
+                <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                <span>Yenile</span>
+              </button>
+              <button onclick="openAddTaskModal(null)" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs flex items-center space-x-1.5 transition-colors shadow-md shadow-blue-600/30">
+                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                <span>Yeni Görev Ekle</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- BEGIN: SUBVIEW 1 - PROJE KARTLARI -->
+          <div id="projects-subview-cards" class="flex-1 flex flex-col gap-3 min-h-0 overflow-hidden">
+
+          <!-- TOP EXECUTIVE METRIC CARDS (4 Cards) -->
+          <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 shrink-0" id="stats-section">
+            
+            <!-- 1. Takip Edilen Projeler -->
+            <div class="bg-[#111827] border border-[#1F293D] rounded-xl p-3 flex items-center justify-between shadow-sm">
+              <div>
+                <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Takip Edilen</span>
+                <h3 id="stat-total-projects" class="text-xl font-bold text-white mt-0.5">--</h3>
+                <p id="stat-stale-alert" class="text-[11px] text-emerald-400 mt-0.5 flex items-center gap-1 font-medium">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Projeler aktif
+                </p>
+              </div>
+              <div class="w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+                <i data-lucide="folder-git-2" class="w-4 h-4"></i>
+              </div>
+            </div>
+
+            <!-- 2. Acil / Kritik P1 -->
+            <div class="bg-[#111827] border border-rose-500/30 rounded-xl p-3 flex items-center justify-between shadow-sm">
+              <div>
+                <span class="text-[10px] font-semibold text-rose-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping"></span>
+                  Acil / Kritik (P1)
+                </span>
+                <h3 id="stat-p1-tasks" class="text-xl font-bold text-rose-400 mt-0.5">--</h3>
+                <p class="text-[11px] text-slate-400 mt-0.5">En yüksek öncelik</p>
+              </div>
+              <div class="w-9 h-9 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400">
+                <i data-lucide="alert-octagon" class="w-4 h-4"></i>
+              </div>
+            </div>
+
+            <!-- 3. Bekleyen Görevler -->
+            <div class="bg-[#111827] border border-[#1F293D] rounded-xl p-3 flex items-center justify-between shadow-sm">
+              <div>
+                <span class="text-[10px] font-semibold text-amber-400 uppercase tracking-wider">Bekleyen Görevler</span>
+                <h3 id="stat-pending-tasks" class="text-xl font-bold text-white mt-0.5">--</h3>
+                <p class="text-[11px] text-slate-400 mt-0.5">Toplam yapılacak</p>
+              </div>
+              <div class="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+                <i data-lucide="clock" class="w-4 h-4"></i>
+              </div>
+            </div>
+
+            <!-- 4. Genel İlerleme -->
+            <div class="bg-[#111827] border border-[#1F293D] rounded-xl p-3 flex items-center justify-between shadow-sm">
+              <div>
+                <span class="text-[10px] font-semibold text-emerald-400 uppercase tracking-wider">Genel İlerleme</span>
+                <h3 id="stat-overall-percentage" class="text-xl font-bold text-emerald-400 mt-0.5">--%</h3>
+                <p id="stat-completed-summary" class="text-[11px] text-slate-400 mt-0.5">0 / 0 tamamlandı</p>
+              </div>
+              <div class="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+              </div>
+            </div>
+
+          </section>
+
+          <!-- FILTER & SORT TOOLBAR -->
+          <section class="bg-[#111827] border border-[#1F293D] rounded-xl p-3 space-y-2 shrink-0 shadow-sm">
+            <div class="flex flex-col md:flex-row gap-2.5 items-stretch md:items-center justify-between">
+              
+              <!-- Search Box -->
+              <div class="relative flex-1">
+                <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                <input 
+                  type="text" 
+                  id="search-input" 
+                  oninput="handleSearch(this.value)" 
+                  placeholder="Proje adı, görev içeriği, @etiket veya #kategori ara..." 
+                  class="w-full pl-9 pr-3 py-1.5 bg-[#080C14] border border-[#1F293D] rounded-lg text-xs text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 transition-colors"
+                />
+              </div>
+
+              <!-- Priority Pills Filter -->
+              <div class="flex flex-wrap items-center gap-1.5">
+                <button onclick="setPriorityFilter('all')" data-filter="all" class="filter-btn active px-2.5 py-1 text-xs font-semibold rounded-lg bg-blue-600 text-white transition-all shadow-sm">Tümü</button>
+                <button onclick="setPriorityFilter('p1')" data-filter="p1" class="filter-btn px-2.5 py-1 text-xs font-medium rounded-lg bg-[#182234] text-slate-300 hover:bg-[#1F2C42] transition-all flex items-center gap-1.5 border border-[#1F293D]">
+                  <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span> P1 Acil
+                </button>
+                <button onclick="setPriorityFilter('p2')" data-filter="p2" class="filter-btn px-2.5 py-1 text-xs font-medium rounded-lg bg-[#182234] text-slate-300 hover:bg-[#1F2C42] transition-all flex items-center gap-1.5 border border-[#1F293D]">
+                  <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> P2 Normal
+                </button>
+                <button onclick="setPriorityFilter('p3')" data-filter="p3" class="filter-btn px-2.5 py-1 text-xs font-medium rounded-lg bg-[#182234] text-slate-300 hover:bg-[#1F2C42] transition-all flex items-center gap-1.5 border border-[#1F293D]">
+                  <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span> P3 Düşük
+                </button>
+              </div>
+
+              <!-- Sort Select -->
+              <div class="flex items-center space-x-2">
+                <span class="text-xs text-slate-400 whitespace-nowrap">Sırala:</span>
+                <select id="sort-select" onchange="handleSortChange(this.value)" class="bg-[#080C14] border border-[#1F293D] text-slate-200 text-xs rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-blue-500">
+                  <option value="p1_desc">En Çok Acil İşi Olan (Önerilen)</option>
+                  <option value="health_asc">Sağlık Skoru (En Düşük Önce)</option>
+                  <option value="stale_desc">İhmal Edilmişler Önce</option>
+                  <option value="pending_desc">En Çok Bekleyen Görev</option>
+                  <option value="progress_asc">Tamamlanma Oranı</option>
+                  <option value="alpha_asc">Alfabetik (A-Z)</option>
+                </select>
+              </div>
+
+            </div>
+
+            <!-- Sub-filters Checkboxes -->
+            <div class="flex items-center justify-between text-[11px] text-slate-400 pt-1.5 border-t border-[#1F293D]">
+              <div class="flex items-center space-x-4">
+                <label class="flex items-center space-x-1.5 cursor-pointer hover:text-white">
+                  <input type="checkbox" id="toggle-hide-completed" onchange="toggleHideCompleted(this.checked)" class="rounded border-[#1F293D] bg-[#080C14] text-blue-600 focus:ring-0">
+                  <span>Tamamlanan görevleri gizle</span>
+                </label>
+                <label class="flex items-center space-x-1.5 cursor-pointer hover:text-amber-400">
+                  <input type="checkbox" id="toggle-stale-only" onchange="toggleStaleOnly(this.checked)" class="rounded border-[#1F293D] bg-[#080C14] text-amber-500 focus:ring-0">
+                  <span>Sadece ihmal edilmiş projeleri göster</span>
+                </label>
+              </div>
+              <div id="filter-results-count" class="text-slate-400 font-medium">Yükleniyor...</div>
+            </div>
+          </section>
+
+          <!-- 2-COLUMN LAYOUT: PROJECTS CARDS + RIGHT TELEGRAM & FOCUS HUB -->
+          <div class="flex-1 min-h-0 grid grid-cols-1 xl:grid-cols-4 gap-4 h-full items-stretch">
+            
+            <!-- Left: High Readability Project Cards (3 cols) -->
+            <div class="xl:col-span-3 flex flex-col h-full min-h-0">
+              <div id="loading-state" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="h-64 rounded-2xl bg-[#111827] border border-[#1F293D] animate-pulse"></div>
+                <div class="h-64 rounded-2xl bg-[#111827] border border-[#1F293D] animate-pulse"></div>
+                <div class="h-64 rounded-2xl bg-[#111827] border border-[#1F293D] animate-pulse"></div>
+              </div>
+
+              <div id="empty-state" class="hidden text-center py-16 px-4 bg-[#111827]/40 rounded-2xl border border-dashed border-[#1F293D]">
+                <div class="w-16 h-16 rounded-full bg-[#182234] flex items-center justify-center mx-auto text-slate-400 mb-4">
+                  <i data-lucide="folder-search" class="w-8 h-8"></i>
+                </div>
+                <h3 class="text-base font-semibold text-white">Gösterilecek Proje Bulunamadı</h3>
+                <p id="empty-state-text" class="text-xs text-slate-400 max-w-md mx-auto mt-1">Arama kriterlerinize uygun proje yok.</p>
+                <button onclick="resetFilters()" class="mt-4 px-4 py-2 bg-[#182234] hover:bg-[#1F2C42] text-xs font-medium text-white rounded-xl transition-colors border border-[#1F293D]">
+                  Filtreleri Temizle
+                </button>
+              </div>
+
+              <div id="projects-grid" class="flex-1 min-h-0 overflow-y-auto pr-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 content-start">
+                <!-- Rendered dynamically via renderProjectsGrid() -->
+              </div>
+            </div>
+
+            <!-- Right: Telegram Notification Center & Quick Hub (1 col) -->
+            <div class="h-full min-h-0 overflow-y-auto pr-1 space-y-4">
+              
+              <!-- Telegram Notification Center Card -->
+              <div class="bg-[#111827] border border-[#1F293D] rounded-2xl p-5 space-y-4 shadow-sm">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-sky-500/10 text-sky-400 flex items-center justify-center">
+                      <i data-lucide="bell-ring" class="w-4 h-4"></i>
+                    </div>
+                    <div>
+                      <h4 class="text-sm font-bold text-white">Telegram Bildirimleri</h4>
+                      <p class="text-[11px] text-slate-400">4 Otomatik Bildirim Sistemi</p>
+                    </div>
+                  </div>
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1 animate-pulse"></span>
+                    Bağlı
+                  </span>
+                </div>
+
+                <!-- 4 Notification Scenarios Status List -->
+                <div class="space-y-2.5 text-xs border-y border-[#1F293D] py-3">
+                  <div class="flex items-start justify-between gap-2">
+                    <div class="flex items-center gap-1.5 text-slate-300">
+                      <span>🌅</span>
+                      <div>
+                        <span class="font-semibold text-white">Sabah Özeti</span>
+                        <span class="block text-[10px] text-slate-400">Her sabah 09:00</span>
+                      </div>
+                    </div>
+                    <button onclick="sendTelegramDigest('morning')" class="px-2 py-1 bg-[#182234] hover:bg-[#1F2C42] text-sky-400 border border-[#1F293D] rounded-lg text-[10px] font-medium transition-colors shrink-0">
+                      Test Et
+                    </button>
+                  </div>
+
+                  <div class="flex items-start justify-between gap-2">
+                    <div class="flex items-center gap-1.5 text-slate-300">
+                      <span>🚨</span>
+                      <div>
+                        <span class="font-semibold text-rose-400">Anlık P1 Alarmı</span>
+                        <span class="block text-[10px] text-slate-400">Yeni P1 açılınca anında</span>
+                      </div>
+                    </div>
+                    <button onclick="sendTelegramDigest('p1')" class="px-2 py-1 bg-rose-500/15 hover:bg-rose-500/25 text-rose-400 border border-rose-500/30 rounded-lg text-[10px] font-medium transition-colors shrink-0">
+                      Alarm Test
+                    </button>
+                  </div>
+
+                  <div class="flex items-start justify-between gap-2">
+                    <div class="flex items-center gap-1.5 text-slate-300">
+                      <span>⏰</span>
+                      <div>
+                        <span class="font-semibold text-white">Teslimat Uyarısı</span>
+                        <span class="block text-[10px] text-slate-400">Hafta içi 16:00</span>
+                      </div>
+                    </div>
+                    <button onclick="sendTelegramDigest('deadline')" class="px-2 py-1 bg-[#182234] hover:bg-[#1F2C42] text-sky-400 border border-[#1F293D] rounded-lg text-[10px] font-medium transition-colors shrink-0">
+                      Test Et
+                    </button>
+                  </div>
+
+                  <div class="flex items-start justify-between gap-2">
+                    <div class="flex items-center gap-1.5 text-slate-300">
+                      <span>🌆</span>
+                      <div>
+                        <span class="font-semibold text-white">Gün Sonu Raporu</span>
+                        <span class="block text-[10px] text-slate-400">Hafta içi 18:00</span>
+                      </div>
+                    </div>
+                    <button onclick="sendTelegramDigest('evening')" class="px-2 py-1 bg-[#182234] hover:bg-[#1F2C42] text-sky-400 border border-[#1F293D] rounded-lg text-[10px] font-medium transition-colors shrink-0">
+                      Test Et
+                    </button>
+                  </div>
+                </div>
+
+                <button onclick="sendTelegramDigest('morning')" class="w-full py-2 bg-sky-600 hover:bg-sky-500 text-white rounded-xl text-xs font-semibold transition-colors flex items-center justify-center space-x-1.5 shadow-md shadow-sky-600/20">
+                  <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                  <span>Sabah Özetini Şimdi Gönder</span>
+                </button>
+              </div>
+
+              <!-- Mini Focus / Pomodoro Jump Card -->
+              <div class="bg-[#111827] border border-[#1F293D] rounded-2xl p-5 space-y-3 shadow-sm">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-2">
+                    <i data-lucide="target" class="w-4 h-4 text-amber-400"></i>
+                    <h4 class="text-sm font-bold text-white">Günün Hedefi</h4>
+                  </div>
+                  <span class="text-[10px] text-slate-400 font-mono">25:00</span>
+                </div>
+                <p class="text-xs text-slate-300 italic bg-[#080C14] p-2.5 rounded-xl border border-[#1F293D]">
+                  "Küçük adımlar, büyük sonuçlar. Bugün en acil 3 göreve odaklan."
+                </p>
+                <button onclick="switchView('focus')" class="w-full py-2 bg-[#182234] hover:bg-[#1F2C42] text-white rounded-xl text-xs font-medium transition-colors flex items-center justify-center space-x-1.5 border border-[#1F293D]">
+                  <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                  <span>Günlük Odak Paneline Git</span>
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+          </div>
+          <!-- END: SUBVIEW 1 - PROJE KARTLARI -->
+
+          <!-- BEGIN: SUBVIEW 2 - HATALAR, ÖNERİLER & FİKİR RADARI -->
+          <div id="projects-subview-radar" class="hidden flex-1 flex flex-col gap-4 min-h-0 overflow-y-auto pr-1">
+            
+            <!-- Radar Toolbar -->
+            <section aria-label="Radar Başlık ve Araç Çubuğu" class="flex flex-col md:flex-row md:items-center justify-between gap-3 shrink-0 pb-3 border-b border-[#1b2840]">
+              <div>
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/25">
+                    <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                    YAPAY ZEKA DENETİMİ & YOL HARİTASI
+                  </span>
+                  <span id="insights-overall-health-badge" class="px-2.5 py-0.5 rounded-lg text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Portföy: A+</span>
+                </div>
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                  Proje Radarı: Hatalar, Öneriler & Fikir Havuzu
+                </h3>
+                <p class="text-xs text-slate-400 mt-0.5">
+                  Projelerin teknik risklerini tespit edin, akıllı önerileri uygulayın ve yeni fikirleri anında Kanban panosuna aktarın.
+                </p>
+              </div>
+              <div class="flex items-center gap-2 shrink-0">
+                <button onclick="exportProjectInsightsReport()" class="px-3 py-1.5 bg-[#10192a] hover:bg-[#16233b] border border-[#1e2d48] text-slate-200 hover:text-white rounded-xl text-xs font-semibold transition-all flex items-center gap-2 cursor-pointer shadow-sm">
+                  <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                  <span>Rapor Dışa Aktar</span>
+                </button>
+                <button onclick="refreshProjectInsights()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold transition-all flex items-center gap-2 cursor-pointer shadow-md">
+                  <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                  <span>Yeniden Tara</span>
+                </button>
+              </div>
+            </section>
+
+            <!-- Project Selector Filter Strip -->
+            <section aria-label="Proje Filtre Sekmeleri" class="flex items-center gap-2 overflow-x-auto pb-1 shrink-0 scrollbar-thin" id="insights-project-tabs-container">
+              <!-- Dynamically populated by renderInsightsView() -->
+            </section>
+
+            <!-- Executive KPI Stat Cards (4 Cards) -->
+            <section aria-label="Temel Radar Metrikleri" class="grid grid-cols-2 lg:grid-cols-4 gap-3 shrink-0">
+              <!-- Card 1: Kritik Riskler -->
+              <div class="p-3.5 rounded-2xl bg-[#0e1727] border border-rose-900/40 relative overflow-hidden transition-all hover:border-rose-700/50 shadow-sm">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-slate-400">Kritik Risk & Hata</span>
+                  <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping"></span>
+                </div>
+                <div class="mt-2 flex items-baseline gap-2">
+                  <span id="kpi-radar-risks" class="text-2xl font-bold text-white font-mono">0</span>
+                  <span class="text-xs text-rose-400 font-semibold">Acil Çözüm</span>
+                </div>
+                <p class="text-[11px] text-slate-400 mt-1">P1 hata, gecikme ve ihmal uyarısı</p>
+              </div>
+
+              <!-- Card 2: Sağlık Skoru -->
+              <div class="p-3.5 rounded-2xl bg-[#0e1727] border border-blue-900/40 transition-all hover:border-blue-700/50 shadow-sm">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-slate-400">Teknik Sağlık Puanı</span>
+                  <span id="kpi-radar-grade" class="px-2 py-0.5 rounded text-[11px] font-bold bg-blue-500/20 text-blue-400 border border-blue-500/30">A+</span>
+                </div>
+                <div class="mt-2 flex items-baseline gap-2">
+                  <span id="kpi-radar-score" class="text-2xl font-bold text-white font-mono">88</span>
+                  <span class="text-xs text-slate-400 font-medium">/ 100</span>
+                </div>
+                <p class="text-[11px] text-slate-400 mt-1">Mimari & tamamlama katsayısı</p>
+              </div>
+
+              <!-- Card 3: Fikir Havuzu -->
+              <div class="p-3.5 rounded-2xl bg-[#0e1727] border border-cyan-900/40 transition-all hover:border-cyan-700/50 shadow-sm">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-slate-400">Fikir & İnovasyonlar</span>
+                  <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                </div>
+                <div class="mt-2 flex items-baseline gap-2">
+                  <span id="kpi-radar-ideas" class="text-2xl font-bold text-white font-mono">0</span>
+                  <span class="text-xs text-cyan-400 font-semibold">Yol Haritası</span>
+                </div>
+                <p class="text-[11px] text-slate-400 mt-1">P4 fikirler & gelecek hedefleri</p>
+              </div>
+
+              <!-- Card 4: Genel İlerleme -->
+              <div class="p-3.5 rounded-2xl bg-[#0e1727] border border-emerald-900/40 transition-all hover:border-emerald-700/50 shadow-sm">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-slate-400">Tamamlanan İşler</span>
+                  <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div class="mt-2 flex items-baseline gap-2">
+                  <span id="kpi-radar-progress" class="text-2xl font-bold text-white font-mono">%0</span>
+                  <span class="text-xs text-emerald-400 font-semibold">Üretim Durumu</span>
+                </div>
+                <p id="kpi-radar-tasks-text" class="text-[11px] text-slate-400 mt-1">0 / 0 görev tamamlandı</p>
+              </div>
+            </section>
+
+            <!-- 3-Pillar Command Grid -->
+            <section aria-label="3 Sütunlu Komuta Merkezi" class="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start flex-1 min-h-0">
+              
+              <!-- SÜTUN 1: HATALAR & RİSK RADARI -->
+              <div class="bg-[#0e1727] border border-[#1b2840] rounded-2xl p-4 flex flex-col gap-3 shadow-sm">
+                <div class="flex items-center justify-between pb-2.5 border-b border-[#1b2840]">
+                  <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                    </div>
+                    <div>
+                      <h4 class="text-sm font-bold text-white">1. Hatalar & Risk Radarı</h4>
+                      <p class="text-[11px] text-slate-400">P1 acil hatalar & geciken işler</p>
+                    </div>
+                  </div>
+                  <span id="radar-pillar-risks-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30">0 Risk</span>
+                </div>
+                <div id="radar-pillar-risks-list" class="space-y-3 overflow-y-auto max-h-[580px] pr-1">
+                  <!-- Dynamically rendered -->
+                </div>
+              </div>
+
+              <!-- SÜTUN 2: AKILLI ÖNERİLER & SAĞLIK DENETİMİ -->
+              <div class="bg-[#0e1727] border border-[#1b2840] rounded-2xl p-4 flex flex-col gap-3 shadow-sm">
+                <div class="flex items-center justify-between pb-2.5 border-b border-[#1b2840]">
+                  <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="9" y1="18" x2="15" y2="18"></line><line x1="10" y1="22" x2="14" y2="22"></line><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path></svg>
+                    </div>
+                    <div>
+                      <h4 class="text-sm font-bold text-white">2. Akıllı Mimari & Süreç</h4>
+                      <p class="text-[11px] text-slate-400">Skor teşhisi & eylem rehberi</p>
+                    </div>
+                  </div>
+                  <span id="radar-pillar-suggestions-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">Tavsiyeler</span>
+                </div>
+                <div id="radar-pillar-suggestions-list" class="space-y-3 overflow-y-auto max-h-[580px] pr-1">
+                  <!-- Dynamically rendered -->
+                </div>
+              </div>
+
+              <!-- SÜTUN 3: FİKİR HAVUZU & YOL HARİTASI -->
+              <div class="bg-[#0e1727] border border-[#1b2840] rounded-2xl p-4 flex flex-col gap-3 shadow-sm">
+                <div class="flex items-center justify-between pb-2.5 border-b border-[#1b2840]">
+                  <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                    </div>
+                    <div>
+                      <h4 class="text-sm font-bold text-white">3. Fikir Havuzu & Backlog</h4>
+                      <p class="text-[11px] text-slate-400">Gelecek inovasyonlar & özellikler</p>
+                    </div>
+                  </div>
+                  <span id="radar-pillar-ideas-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">0 Fikir</span>
+                </div>
+
+                <!-- Fast Idea Composer -->
+                <div class="p-3 bg-[#080C14] border border-[#1b2840] rounded-xl space-y-2.5 shadow-sm">
+                  <div class="flex items-center gap-2">
+                    <input 
+                      id="radar-new-idea-input" 
+                      type="text" 
+                      placeholder="Yeni bir proje fikri veya özellik yazın..." 
+                      class="flex-1 px-3 py-1.5 bg-[#0e1727] border border-[#1b2840] rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
+                      onkeydown="if(event.key==='Enter') submitRadarIdea();"
+                    />
+                    <button onclick="submitRadarIdea();" class="px-3.5 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-xs font-semibold shrink-0 shadow transition-colors flex items-center gap-1.5 cursor-pointer">
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                      <span>Kaydet</span>
+                    </button>
+                  </div>
+                  <div class="flex flex-wrap items-center justify-between gap-2 text-[11px]">
+                    <div class="flex items-center gap-1.5" id="radar-idea-tag-buttons">
+                      <span class="text-slate-400 text-[10px]">Etiket:</span>
+                      <button type="button" onclick="selectRadarIdeaTag(this, '💡 Yenilik')" class="radar-tag-btn px-2 py-0.5 rounded-md bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-[10px] font-medium active">💡 Yenilik</button>
+                      <button type="button" onclick="selectRadarIdeaTag(this, '🎨 Tasarım')" class="radar-tag-btn px-2 py-0.5 rounded-md bg-[#10192a] text-slate-400 border border-[#1e2d48] text-[10px] font-medium">🎨 Tasarım</button>
+                      <button type="button" onclick="selectRadarIdeaTag(this, '⚡ Hız')" class="radar-tag-btn px-2 py-0.5 rounded-md bg-[#10192a] text-slate-400 border border-[#1e2d48] text-[10px] font-medium">⚡ Hız</button>
+                      <button type="button" onclick="selectRadarIdeaTag(this, '🔒 Güvenlik')" class="radar-tag-btn px-2 py-0.5 rounded-md bg-[#10192a] text-slate-400 border border-[#1e2d48] text-[10px] font-medium">🔒 Güvenlik</button>
+                      <button type="button" onclick="selectRadarIdeaTag(this, '🎮 Oyun')" class="radar-tag-btn px-2 py-0.5 rounded-md bg-[#10192a] text-slate-400 border border-[#1e2d48] text-[10px] font-medium">🎮 Oyun</button>
+                      <button type="button" onclick="selectRadarIdeaTag(this, '📱 Mobil')" class="radar-tag-btn px-2 py-0.5 rounded-md bg-[#10192a] text-slate-400 border border-[#1e2d48] text-[10px] font-medium">📱 Mobil</button>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                      <span class="text-slate-400 text-[10px]">Hedef Proje:</span>
+                      <select id="radar-idea-project-select" class="px-2 py-1 bg-[#0e1727] border border-[#1b2840] rounded-lg text-[10px] text-slate-300 focus:outline-none">
+                        <!-- Populated dynamically -->
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Dynamic Ideas List -->
+                <div id="radar-pillar-ideas-list" class="space-y-2.5 overflow-y-auto max-h-[480px] pr-1">
+                  <!-- Dynamically rendered -->
+                </div>
+              </div>
+
+            </section>
+
+          </div>
+          <!-- END: SUBVIEW 2 - HATALAR, ÖNERİLER & FİKİR RADARI -->
+
+        </div>
+
+        <!-- ======================================================== -->
+        <!-- VIEW 2: KANBAN (MATCHING TOP-LEFT SCREEN IN MOCKUP)      -->
+        <!-- ======================================================== -->
+
+      <!-- ======================================================== -->
+      <!-- VIEW 2: KANBAN (Matches User's New 5-Column Mockup)      -->
+      <!-- ======================================================== -->
+      <div id="view-container-kanban" class="hidden flex-1 flex flex-col min-w-0 bg-[#0B0F17] overflow-hidden w-full h-full min-h-0">
+        
+        <!-- Board Header & Filters -->
+        <div class="px-4 lg:px-6 pt-4 pb-2.5 flex-shrink-0 flex flex-col gap-2.5">
+          <!-- Title & Subtitle -->
+          <div class="flex flex-col">
+            <h1 class="text-xl lg:text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+              Kanban
+            </h1>
+            <p class="text-xs text-slate-400 mt-0.5">Tüm projelerin görevlerini tek panoda yönetin.</p>
+          </div>
+
+          <!-- Filters & Toolbar -->
+          <div class="flex flex-wrap items-center justify-between gap-2.5 pt-0.5">
+            <div class="flex flex-wrap items-center gap-2">
+              
+              <!-- Board Search -->
+              <div class="relative w-60">
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                  </svg>
+                </span>
+                <input 
+                  id="kanban-search-input" 
+                  oninput="handleKanbanSearch(this.value)" 
+                  class="w-full pl-9 pr-3 py-1.5 bg-[#111827] border border-[#1F293D] rounded-lg text-xs text-slate-300 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500" 
+                  placeholder="Görev veya etiket ara..." 
+                  type="text"
+                />
+              </div>
+
+              <!-- Priority Badges Filtering -->
+              <div class="flex items-center gap-1.5 bg-[#111827] p-1 rounded-lg border border-[#1F293D]">
+                <button onclick="toggleKanbanPriorityFilter('P1')" id="kfilter-p1" class="flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20 transition-colors">
+                  <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                  <span>P1</span>
+                </button>
+                <button onclick="toggleKanbanPriorityFilter('P2')" id="kfilter-p2" class="flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium bg-orange-500/10 text-orange-400 hover:bg-orange-500/20 border border-orange-500/20 transition-colors">
+                  <span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
+                  <span>P2</span>
+                </button>
+                <button onclick="toggleKanbanPriorityFilter('P3')" id="kfilter-p3" class="flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium bg-sky-500/10 text-sky-400 hover:bg-sky-500/20 border border-sky-500/20 transition-colors">
+                  <span class="w-1.5 h-1.5 rounded-full bg-sky-400"></span>
+                  <span>P3</span>
+                </button>
+              </div>
+
+              <!-- Tags Dropdown Filter -->
+              <div class="relative">
+                <select id="kanban-tag-filter" onchange="filterKanbanByTag(this.value)" class="appearance-none bg-[#111827] border border-[#1F293D] text-slate-300 text-xs rounded-lg pl-3 pr-8 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer">
+                  <option value="all">Etiketler</option>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-400">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                </div>
+              </div>
+
+              <!-- Project Filter -->
+              <div class="relative">
+                <select id="kanban-repo-filter" onchange="filterKanbanByRepo(this.value)" class="appearance-none bg-[#111827] border border-[#1F293D] text-slate-300 text-xs rounded-lg pl-3 pr-8 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer">
+                  <option value="all">Tüm Projeler</option>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-400">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Sort Select Menu -->
+            <div class="flex items-center gap-2">
+              <div class="relative">
+                <select id="kanban-sort-select" onchange="changeKanbanSort(this.value)" class="appearance-none bg-[#111827] border border-[#1F293D] text-slate-300 text-xs rounded-lg pl-3 pr-8 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer">
+                  <option value="custom" selected>Özel Sıralama (Sürükle-Bırak)</option>
+                  <option value="priority">Öncelik Sırası</option>
+                  <option value="recent">Son Güncellenen</option>
+                  <option value="dueDate">Bitiş Tarihi</option>
+                  <option value="repo">Proje Adı</option>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-400">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- END: BoardHeaderAndFilters -->
+
+        <!-- BEGIN: KanbanBoardColumns (5 Columns Horizontal Scroll) -->
+        <div class="flex-1 min-h-0 overflow-x-auto px-4 lg:px-6 pb-3 pt-1 h-full">
+          <div class="flex gap-3.5 h-full items-stretch w-max min-h-0">
+
+            <!-- Column 1: Backlog -->
+            <section ondragover="handleKanbanColDragOver(event, this)" ondragleave="handleKanbanColDragLeave(event, this)" ondrop="handleKanbanColDrop(event, 'backlog')" class="kanban-column-wrapper w-72 bg-[#111827]/60 border border-[#1F293D]/80 rounded-2xl flex flex-col p-3 h-full min-h-0 shadow-sm transition-all">
+              <div class="flex items-center justify-between pb-2 px-1 border-b border-[#1F293D]/50 select-none shrink-0">
+                <div class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-slate-400"></span>
+                  <h2 class="text-xs font-bold uppercase tracking-wider text-slate-300">Backlog</h2>
+                </div>
+                <span id="kanban-count-backlog" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-[#182234] text-slate-400 border border-[#1F293D]">0</span>
+              </div>
+              <div id="kanban-col-backlog" class="kanban-column-body flex-1 min-h-0 flex flex-col gap-2.5 pt-2.5 overflow-y-auto pr-1"></div>
+            </section>
+
+            <!-- Column 2: Yapılacak -->
+            <section ondragover="handleKanbanColDragOver(event, this)" ondragleave="handleKanbanColDragLeave(event, this)" ondrop="handleKanbanColDrop(event, 'todo')" class="kanban-column-wrapper w-72 bg-[#111827]/60 border border-[#1F293D]/80 rounded-2xl flex flex-col p-3.5 h-full min-h-0 shadow-sm transition-all">
+              <div class="flex items-center justify-between pb-2 px-1 border-b border-[#1F293D]/50 select-none shrink-0">
+                <div class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                  <h2 class="text-xs font-bold uppercase tracking-wider text-slate-300">Yapılacak</h2>
+                </div>
+                <span id="kanban-count-todo" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-[#182234] text-slate-400 border border-[#1F293D]">0</span>
+              </div>
+              <div id="kanban-col-todo" class="kanban-column-body flex-1 min-h-0 flex flex-col gap-2.5 pt-2.5 overflow-y-auto pr-1"></div>
+            </section>
+
+            <!-- Column 3: Devam Ediyor -->
+            <section ondragover="handleKanbanColDragOver(event, this)" ondragleave="handleKanbanColDragLeave(event, this)" ondrop="handleKanbanColDrop(event, 'inprogress')" class="kanban-column-wrapper w-72 bg-[#111827]/60 border border-[#1F293D]/80 rounded-2xl flex flex-col p-3.5 h-full min-h-0 shadow-sm transition-all">
+              <div class="flex items-center justify-between pb-2 px-1 border-b border-[#1F293D]/50 select-none shrink-0">
+                <div class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                  <h2 class="text-xs font-bold uppercase tracking-wider text-slate-300">Devam Ediyor</h2>
+                </div>
+                <span id="kanban-count-in-progress" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-[#182234] text-slate-400 border border-[#1F293D]">0</span>
+              </div>
+              <div id="kanban-col-in-progress" class="kanban-column-body flex-1 min-h-0 flex flex-col gap-2.5 pt-2.5 overflow-y-auto pr-1"></div>
+            </section>
+
+            <!-- Column 4: İncelemede -->
+            <section ondragover="handleKanbanColDragOver(event, this)" ondragleave="handleKanbanColDragLeave(event, this)" ondrop="handleKanbanColDrop(event, 'review')" class="kanban-column-wrapper w-72 bg-[#111827]/60 border border-[#1F293D]/80 rounded-2xl flex flex-col p-3.5 h-full min-h-0 shadow-sm transition-all">
+              <div class="flex items-center justify-between pb-2 px-1 border-b border-[#1F293D]/50 select-none shrink-0">
+                <div class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-purple-400"></span>
+                  <h2 class="text-xs font-bold uppercase tracking-wider text-slate-300">İncelemede</h2>
+                </div>
+                <span id="kanban-count-review" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-[#182234] text-slate-400 border border-[#1F293D]">0</span>
+              </div>
+              <div id="kanban-col-review" class="kanban-column-body flex-1 min-h-0 flex flex-col gap-2.5 pt-2.5 overflow-y-auto pr-1"></div>
+            </section>
+
+            <!-- Column 5: Tamamlandı -->
+            <section ondragover="handleKanbanColDragOver(event, this)" ondragleave="handleKanbanColDragLeave(event, this)" ondrop="handleKanbanColDrop(event, 'done')" class="kanban-column-wrapper w-72 bg-[#111827]/60 border border-[#1F293D]/80 rounded-2xl flex flex-col p-3.5 h-full min-h-0 shadow-sm transition-all">
+              <div class="flex items-center justify-between pb-2 px-1 border-b border-[#1F293D]/50 select-none shrink-0">
+                <div class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                  <h2 class="text-xs font-bold uppercase tracking-wider text-slate-300">Tamamlandı</h2>
+                </div>
+                <span id="kanban-count-done" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-[#182234] text-emerald-400 border border-[#1F293D]">0</span>
+              </div>
+              <div id="kanban-col-done" class="kanban-column-body flex-1 min-h-0 flex flex-col gap-2.5 pt-2.5 overflow-y-auto pr-1"></div>
+            </section>
+
+          </div>
+        </div>
+        <!-- END: KanbanBoardColumns -->
+
+      </div>
+
+        <!-- ======================================================== -->
+        <!-- VIEW 3: TAKVİM (MATCHING TOP-MIDDLE SCREEN IN MOCKUP)    -->
+        <!-- ======================================================== -->
+
+      <!-- VIEW 3: TAKVİM -->
+      <!-- ======================================================== -->
+      <!-- VIEW 3: TAKVİM & PLANLAMA (Matches Mockup Exactly)       -->
+      <!-- ======================================================== -->
+      <div id="view-container-calendar" class="hidden flex-1 flex flex-col p-4 lg:p-5 gap-3 w-full h-full min-h-0 overflow-hidden bg-[#070b12]">
+        
+        <!-- Header Titles and View Toggles -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 shrink-0">
+          <div>
+            <h1 class="text-xl lg:text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+              Takvim
+            </h1>
+            <p class="text-xs text-slate-400 mt-0.5">Görev takvimi ve zamanlanmış iş yönetimi.</p>
+          </div>
+
+          <!-- Calendar View Selectors -->
+          <div class="flex items-center gap-2">
+            <div class="bg-[#0b1220] p-1 rounded-lg border border-[#16233d] flex items-center gap-0.5 text-xs">
+              <button onclick="setCalendarMode('day')" id="cal-mode-day" class="px-3 py-1.5 rounded-md text-slate-400 hover:text-slate-200 transition-colors">Gün</button>
+              <button onclick="setCalendarMode('week')" id="cal-mode-week" class="px-3 py-1.5 rounded-md text-slate-400 hover:text-slate-200 transition-colors">Hafta</button>
+              <button onclick="setCalendarMode('month')" id="cal-mode-month" class="px-3.5 py-1.5 rounded-md bg-blue-600 text-white font-medium shadow-sm transition-all">Ay</button>
+            </div>
+            <button onclick="goToCurrentMonth()" class="px-3.5 py-1.5 bg-[#0d1629] border border-[#182643] rounded-lg text-xs font-medium text-slate-300 hover:bg-[#121f3a] transition-colors">
+              Bugün
+            </button>
+            <button onclick="copyIcsFeedUrl()" title="iCal Takvim URL Kopyala" class="p-1.5 rounded-lg bg-[#0d1629] hover:bg-[#121f3a] text-sky-400 border border-[#182643] transition-colors">
+              <i data-lucide="calendar-plus" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Two Column Main Workspace Grid -->
+        <div class="grid grid-cols-1 xl:grid-cols-12 gap-3.5 flex-1 min-h-0 h-full items-stretch">
+          
+          <!-- BEGIN: LeftCalendarColumn (8 cols) -->
+          <section class="xl:col-span-8 bg-[#0b1322] border border-[#16233e] rounded-2xl p-4 flex flex-col gap-2 h-full min-h-0 shadow-sm" data-purpose="monthly-calendar-card">
+            
+            <!-- Month Header with Navigators -->
+            <div class="flex items-center justify-between border-b border-[#141f38] pb-2 shrink-0">
+              <div class="flex items-center gap-2.5">
+                <h2 id="calendar-month-title" class="text-base font-semibold text-white tracking-wide">Ekim 2026</h2>
+                <div class="flex items-center gap-1 bg-[#0e172a] rounded-lg p-0.5 border border-[#1a2847]">
+                  <button onclick="navigateMonth(-1)" class="p-1 text-slate-400 hover:text-slate-200 hover:bg-[#15233e] rounded transition">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                  </button>
+                  <button onclick="navigateMonth(1)" class="p-1 text-slate-400 hover:text-slate-200 hover:bg-[#15233e] rounded transition">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                  </button>
+                </div>
+              </div>
+              <div id="calendar-total-tasks-badge" class="text-xs text-slate-400 font-medium">Toplam 18 Görev Dağıtıldı</div>
+            </div>
+
+            <!-- Calendar Days Header -->
+            <div class="grid grid-cols-7 text-center text-[11px] font-semibold text-slate-400 py-1 border-b border-[#141f38]/60 shrink-0">
+              <div>Pzt</div>
+              <div>Sal</div>
+              <div>Çar</div>
+              <div>Per</div>
+              <div>Cum</div>
+              <div>Cmt</div>
+              <div>Paz</div>
+            </div>
+
+            <!-- Calendar Month Grid (7 columns x 5 weeks) -->
+            <div id="calendar-days-grid" class="grid grid-cols-7 gap-1.5 flex-1 min-h-0 h-full select-none" data-purpose="days-grid">
+              <!-- Rendered dynamically by renderCalendarView() -->
+            </div>
+
+            <!-- Hidden container for weekly timetable if user switches to week mode -->
+            <div id="weekly-timetable-wrapper" class="hidden flex-1 min-h-0 overflow-auto pt-1">
+              <div id="weekly-timetable-container" class="min-w-[620px]"></div>
+            </div>
+
+          </section>
+          <!-- END: LeftCalendarColumn -->
+
+          <!-- BEGIN: RightSidebarColumn (4 cols) -->
+          <div class="xl:col-span-4 flex flex-col gap-3 h-full min-h-0">
+            
+            <!-- Tasks List Card: Yaklaşan ve Geciken Görevler -->
+            <section class="bg-[#0b1322] border border-[#16233e] rounded-2xl p-4 flex flex-col gap-2 flex-1 min-h-0 shadow-sm" data-purpose="upcoming-tasks-section">
+              <div class="flex items-center justify-between shrink-0 pb-1">
+                <h3 class="text-sm font-semibold text-white tracking-wide flex items-center gap-2">
+                  <span>Yaklaşan ve Geciken Görevler</span>
+                </h3>
+                <span onclick="openDayAgendaModal(todayInZone())" class="text-[11px] font-medium text-blue-400 hover:underline cursor-pointer">Tümü</span>
+              </div>
+              
+              <!-- List of Tasks matching image -->
+              <div id="calendar-upcoming-tasks-list" class="flex flex-col gap-2 flex-1 min-h-0 overflow-y-auto pr-1">
+                <!-- Rendered dynamically by renderCalendarView() -->
+              </div>
+            </section>
+
+            <!-- Günlük Kapasite Indicator Card -->
+            <section class="bg-[#0b1322] border border-[#16233e] rounded-2xl p-3.5 flex flex-col gap-2 shrink-0 shadow-sm" data-purpose="capacity-status-card">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-slate-200">Günlük Kapasite</span>
+                <span id="calendar-capacity-hours" class="text-xs font-bold text-blue-400">6 / 8 saat</span>
+              </div>
+              
+              <!-- Progress Bar -->
+              <div class="w-full bg-[#111a2f] h-2 rounded-full overflow-hidden p-0.5 border border-[#1a2745]">
+                <div id="calendar-capacity-bar" class="bg-gradient-to-r from-blue-600 to-cyan-400 h-full rounded-full transition-all duration-500" style="width: 75%"></div>
+              </div>
+
+              <!-- Recommendation / Info Banner -->
+              <div class="mt-1 p-2.5 bg-amber-500/10 border border-amber-500/20 rounded-xl flex items-center gap-2 text-amber-300 text-xs">
+                <svg class="w-3.5 h-3.5 shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                </svg>
+                <span id="calendar-capacity-text" class="text-[11px] font-medium">Bugün 2 görev daha planlayabilirsin.</span>
+              </div>
+            </section>
+
+          </div>
+          <!-- END: RightSidebarColumn -->
+
+        </div>
+        <!-- END: Two Column Main Workspace Grid -->
+
+      </div>
+
+        <!-- ======================================================== -->
+        <!-- VIEW 4: GÜNLÜK ODAK (Matches User's New Mockup Exactly)  -->
+        <!-- ======================================================== -->
+        <div id="view-container-focus" class="hidden flex-1 flex flex-col p-4 lg:p-5 gap-3 w-full h-full min-h-0 overflow-hidden bg-[#080C14]">
+          
+          <!-- View Header -->
+          <div class="flex items-center gap-3 shrink-0">
+            <div class="w-9 h-9 rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-cyan-400 shadow-md">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9" stroke-width="2"></circle>
+                <path d="M12 7v5l3 3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+              </svg>
+            </div>
+            <div>
+              <h1 class="text-xl lg:text-2xl font-bold text-white tracking-tight">Günlük Odak</h1>
+              <p class="text-xs text-slate-400">Bugünün en önemli işleri.</p>
+            </div>
+          </div>
+
+          <!-- 3-Column Grid for Daily Focus Features -->
+          <div class="grid grid-cols-1 xl:grid-cols-12 gap-3.5 flex-1 min-h-0 h-full items-stretch">
+            
+            <!-- Column 1: Pomodoro Focus Timer Card (5 Cols) -->
+            <section class="xl:col-span-5 bg-[#0D1527] border border-[#1E293B] rounded-2xl p-4 flex flex-col items-center justify-between h-full min-h-0 shadow-xl relative overflow-hidden" data-purpose="timer-card">
+              <!-- Subtle backdrop highlight -->
+              <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-64 h-64 bg-cyan-500/10 blur-3xl pointer-events-none rounded-full"></div>
+              
+              <div class="w-full flex items-center justify-between mb-2 z-10 shrink-0">
+                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+                  Pomodoro Seansı
+                </span>
+                <button onclick="resetPomodoro()" title="Sıfırla" class="text-slate-500 hover:text-slate-300 transition-colors p-1 cursor-pointer">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Glowing Circular Timer Ring -->
+              <div class="relative w-44 h-44 sm:w-52 sm:h-52 2xl:w-60 2xl:h-60 flex items-center justify-center my-auto z-10" data-purpose="timer-display">
+                <!-- SVG Radial Gauge -->
+                <svg class="w-full h-full -rotate-90 transform" viewBox="0 0 220 220">
+                  <!-- Background Circle -->
+                  <circle cx="110" cy="110" fill="none" r="92" stroke="#172239" stroke-width="10"></circle>
+                  <!-- Glowing Progress Circle (dynamic stroke-dashoffset) -->
+                  <circle id="pomodoro-svg-circle" class="glow-ring transition-all duration-1000 ease-in-out" cx="110" cy="110" fill="none" r="92" stroke="url(#cyanBlueGradientFocus)" stroke-dasharray="578" stroke-dashoffset="144" stroke-linecap="round" stroke-width="11"></circle>
+                  <defs>
+                    <linearGradient id="cyanBlueGradientFocus" x1="0%" x2="100%" y1="0%" y2="100%">
+                      <stop offset="0%" stop-color="#0284C7"></stop>
+                      <stop offset="100%" stop-color="#38BDF8"></stop>
+                    </linearGradient>
+                  </defs>
+                </svg>
+                <!-- Inner Timer Content -->
+                <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                  <span id="pomodoro-timer-display" class="text-3xl sm:text-4xl font-black tracking-tight text-white font-mono">25:00</span>
+                  <!-- Play / Resume circular button -->
+                  <button onclick="togglePomodoro()" id="pomodoro-inner-play-btn" class="mt-2.5 w-10 h-10 rounded-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 flex items-center justify-center shadow-lg shadow-cyan-500/30 transition-transform active:scale-95 group cursor-pointer" title="Oynat / Başlat">
+                    <svg id="pomodoro-play-icon" class="w-4 h-4 fill-current ml-0.5" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z"></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Start Session Button -->
+              <div class="w-full mt-2 z-10 shrink-0">
+                <button onclick="togglePomodoro()" id="btn-pomodoro-toggle" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-semibold text-xs tracking-wide shadow-lg shadow-blue-600/30 transition-all flex items-center justify-center gap-2 cursor-pointer">
+                  <svg id="btn-pomodoro-icon" class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                  </svg>
+                  <span id="pomodoro-btn-text">Odaklanmaya Başla</span>
+                </button>
+              </div>
+
+              <!-- Bottom Stats Strip -->
+              <div class="w-full grid grid-cols-3 gap-2 pt-3 mt-3 border-t border-[#1E293B] text-center z-10 shrink-0" data-purpose="timer-meta">
+                <div>
+                  <p class="text-[10px] text-slate-400">Planlanan</p>
+                  <p id="focus-planned-time" class="text-xs font-semibold text-slate-200 mt-0.5">6s 30dk</p>
+                </div>
+                <div class="border-x border-[#1E293B]">
+                  <p class="text-[10px] text-slate-400">Gerçekleşen</p>
+                  <p id="focus-elapsed-time" class="text-xs font-semibold text-slate-200 mt-0.5">2s 15dk</p>
+                </div>
+                <div>
+                  <p class="text-[10px] text-slate-400">Tamamlanan</p>
+                  <p id="focus-completed-ratio" class="text-xs font-semibold text-emerald-400 mt-0.5">2 / 5</p>
+                </div>
+              </div>
+            </section>
+
+            <!-- Column 2: Bugünün 3 Öncelikli Görevi (4 Cols) -->
+            <section class="xl:col-span-4 bg-[#0D1527] border border-[#1E293B] rounded-2xl p-4 flex flex-col justify-between h-full min-h-0 shadow-xl" data-purpose="priority-tasks-card">
+              <div class="flex flex-col flex-1 min-h-0">
+                <!-- Card Header -->
+                <div class="flex items-center justify-between pb-3 border-b border-[#1E293B] shrink-0">
+                  <h2 class="text-sm font-semibold text-white">Bugünün 3 Öncelikli Görevi</h2>
+                  <!-- Dropdown 'Sırala' -->
+                  <div class="relative">
+                    <button onclick="toggleFocusSort()" class="inline-flex items-center gap-1 text-[11px] font-medium text-slate-400 bg-[#121B2C] hover:bg-[#1A263D] border border-[#1E293B] px-2.5 py-1 rounded-lg transition-colors cursor-pointer">
+                      <span>Sırala</span>
+                      <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Task List Items -->
+                <div id="focus-top3-list" class="my-2 space-y-2 flex-1 min-h-0 overflow-y-auto pr-1" data-purpose="task-items">
+                  <!-- Rendered dynamically via renderDailyFocus() -->
+                </div>
+              </div>
+
+              <!-- Task Card Quick Info / Add -->
+              <button onclick="openDayAgendaModal(todayInZone())" class="shrink-0 mt-2 w-full py-2 px-3 rounded-lg border border-dashed border-[#1E293B] hover:border-cyan-500/50 hover:bg-[#121B2C] text-xs font-medium text-slate-400 hover:text-cyan-400 transition-colors flex items-center justify-center gap-2 cursor-pointer">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                </svg>
+                Yeni Öncelikli Görev Ekle
+              </button>
+            </section>
+
+            <!-- Column 3: Odak İstatistikleri Card (3 Cols) -->
+            <section class="xl:col-span-3 bg-[#0D1527] border border-[#1E293B] rounded-2xl p-4 flex flex-col justify-between h-full min-h-0 shadow-xl" data-purpose="statistics-card">
+              <div class="flex flex-col flex-1 min-h-0 justify-around">
+                <!-- Card Title -->
+                <h2 class="text-sm font-semibold text-white pb-2.5 border-b border-[#1E293B] shrink-0">Odak İstatistikleri</h2>
+                
+                <!-- Weekly Bar Chart -->
+                <div class="mt-2 shrink-0" data-purpose="weekly-chart">
+                  <div class="flex items-center justify-between text-[10px] text-slate-400 mb-2">
+                    <span>Haftalık Dağılım</span>
+                    <span class="text-cyan-400 font-medium">Bu Hafta</span>
+                  </div>
+                  <!-- Bar columns graphic -->
+                  <div class="h-28 flex items-end justify-between gap-1.5 pt-2 px-1 border-b border-[#1E293B]/70 pb-1.5">
+                    <!-- Pzt -->
+                    <div class="flex-1 flex flex-col items-center gap-1">
+                      <div class="w-full bg-[#1E293B] rounded-t h-14 flex items-end">
+                        <div class="w-full bg-blue-600 rounded-t h-[65%]"></div>
+                      </div>
+                      <span class="text-[9px] text-slate-500">Pzt</span>
+                    </div>
+                    <!-- Sal -->
+                    <div class="flex-1 flex flex-col items-center gap-1">
+                      <div class="w-full bg-[#1E293B] rounded-t h-16 flex items-end">
+                        <div class="w-full bg-cyan-500 rounded-t h-[80%]"></div>
+                      </div>
+                      <span class="text-[9px] text-slate-500">Sal</span>
+                    </div>
+                    <!-- Çar -->
+                    <div class="flex-1 flex flex-col items-center gap-1">
+                      <div class="w-full bg-[#1E293B] rounded-t h-10 flex items-end">
+                        <div class="w-full bg-blue-500 rounded-t h-[45%]"></div>
+                      </div>
+                      <span class="text-[9px] text-slate-500">Çar</span>
+                    </div>
+                    <!-- Per (Active Highlighted) -->
+                    <div class="flex-1 flex flex-col items-center gap-1">
+                      <div class="w-full bg-[#1E293B] rounded-t h-20 flex items-end">
+                        <div class="w-full bg-cyan-400 rounded-t h-[95%] shadow-sm shadow-cyan-400/50"></div>
+                      </div>
+                      <span class="text-[9px] text-cyan-400 font-semibold">Per</span>
+                    </div>
+                    <!-- Cum -->
+                    <div class="flex-1 flex flex-col items-center gap-1">
+                      <div class="w-full bg-[#1E293B] rounded-t h-12 flex items-end">
+                        <div class="w-full bg-blue-600 rounded-t h-[50%]"></div>
+                      </div>
+                      <span class="text-[9px] text-slate-500">Cum</span>
+                    </div>
+                    <!-- Cmt -->
+                    <div class="flex-1 flex flex-col items-center gap-1">
+                      <div class="w-full bg-[#1E293B] rounded-t h-7 flex items-end">
+                        <div class="w-full bg-slate-600 rounded-t h-[30%]"></div>
+                      </div>
+                      <span class="text-[9px] text-slate-500">Cmt</span>
+                    </div>
+                    <!-- Paz -->
+                    <div class="flex-1 flex flex-col items-center gap-1">
+                      <div class="w-full bg-[#1E293B] rounded-t h-5 flex items-end">
+                        <div class="w-full bg-slate-600 rounded-t h-[20%]"></div>
+                      </div>
+                      <span class="text-[9px] text-slate-500">Paz</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Quick Numerical Metrics -->
+                <div class="mt-2 space-y-1.5 shrink-0" data-purpose="metrics-list">
+                  <div class="flex items-center justify-between py-1.5 border-b border-[#1E293B]/50">
+                    <span class="text-xs text-slate-400">Bugün</span>
+                    <div class="flex items-center gap-1.5">
+                      <span class="text-xs font-bold text-white">14</span>
+                      <span class="text-[10px] text-cyan-400">odak</span>
+                    </div>
+                  </div>
+                  <div class="flex items-center justify-between py-1.5 border-b border-[#1E293B]/50">
+                    <span class="text-xs text-slate-400">Toplam</span>
+                    <div class="flex items-center gap-1.5">
+                      <span class="text-xs font-bold text-white">183</span>
+                      <span class="text-[10px] text-cyan-400">odak</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Encouragement Badge -->
+              <div class="shrink-0 mt-2 p-2.5 rounded-xl bg-cyan-950/30 border border-cyan-800/40 text-center" data-purpose="motivation-banner">
+                <p class="text-[11px] font-medium text-cyan-300">
+                  ✨ Daha odaklı çalış, daha fazlasını başar.
+                </p>
+              </div>
+            </section>
+
+          </div>
+
+        </div>
+
+        <!-- ======================================================== -->
+        <!-- VIEW 5: KOD İÇİ TODO (MATCHING BOTTOM-LEFT IN MOCKUP)    -->
+        <!-- ======================================================== -->
+
+      <!-- VIEW 5: KOD İÇİ TODO -->
+      <div id="view-container-scanner" class="hidden flex-1 flex flex-col p-4 lg:p-5 gap-3 w-full h-full min-h-0 overflow-hidden bg-[#0B0F17]">
+        
+        <!-- Subheader -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 shadow-md">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+              </svg>
+            </div>
+            <div>
+              <h1 class="text-xl lg:text-2xl font-bold text-white tracking-tight">Kod İçi TODO</h1>
+              <p class="text-xs text-slate-400 mt-0.5">Kod tabanındaki teknik işleri ve FIXME notlarını takip edin.</p>
+            </div>
+          </div>
+
+          <button onclick="fetchCodeTodos()" class="px-3 py-1.5 bg-[#111827] hover:bg-[#182234] text-slate-200 hover:text-white rounded-xl text-xs font-semibold border border-[#1F293D] flex items-center space-x-2 transition-all shadow-sm cursor-pointer">
+            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+            </svg>
+            <span>Yeniden Tara</span>
+          </button>
+        </div>
+
+        <!-- Filter Toolbar Matching Mockup -->
+        <div class="bg-[#111827] border border-[#1F293D] rounded-xl p-3 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2.5 shrink-0 shadow-sm">
+          <!-- Search -->
+          <div class="relative flex-1">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+              </svg>
+            </span>
+            <input 
+              type="text" 
+              id="todo-search-input" 
+              oninput="filterCodeTodos(this.value)" 
+              placeholder="Dosya, klasör veya içerik ara..." 
+              class="w-full pl-9 pr-3 py-1.5 bg-[#0B0F17] border border-[#1F293D] rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
+            />
+          </div>
+
+          <!-- Tag Filters -->
+          <div class="flex flex-wrap items-center gap-1.5">
+            <button onclick="setTodoTypeFilter('ALL')" id="tfilter-all" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-blue-600 text-white shadow-sm transition-colors cursor-pointer">Tümü</button>
+            <button onclick="setTodoTypeFilter('TODO')" id="tfilter-todo" class="px-2.5 py-1 rounded-lg text-xs font-medium bg-[#0B0F17] text-slate-300 hover:text-white border border-[#1F293D] transition-colors cursor-pointer">TODO</button>
+            <button onclick="setTodoTypeFilter('FIXME')" id="tfilter-fixme" class="px-2.5 py-1 rounded-lg text-xs font-medium bg-[#0B0F17] text-rose-400 hover:bg-rose-500/10 border border-rose-500/30 transition-colors cursor-pointer">FIXME</button>
+            <button onclick="setTodoTypeFilter('BUG')" id="tfilter-bug" class="px-2.5 py-1 rounded-lg text-xs font-medium bg-[#0B0F17] text-amber-400 hover:bg-amber-500/10 border border-amber-500/30 transition-colors cursor-pointer">BUG</button>
+            <button onclick="setTodoTypeFilter('REFACTOR')" id="tfilter-refactor" class="px-2.5 py-1 rounded-lg text-xs font-medium bg-[#0B0F17] text-purple-400 hover:bg-purple-500/10 border border-purple-500/30 transition-colors cursor-pointer">REFACTOR</button>
+          </div>
+        </div>
+
+        <!-- Split View: Left Table + Right Code Preview Inspector -->
+        <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch h-full">
+          
+          <!-- Left: TODO Data Table (7 cols) -->
+          <div class="lg:col-span-7 bg-[#111827] border border-[#1F293D] rounded-2xl flex flex-col h-full min-h-0 overflow-hidden shadow-sm">
+            <div class="flex-1 min-h-0 overflow-y-auto overflow-x-auto">
+              <table class="w-full text-left text-xs text-slate-300">
+                <thead class="bg-[#0B0F17] sticky top-0 z-10 border-b border-[#1F293D] text-slate-400 uppercase text-[10px] font-semibold tracking-wider">
+                  <tr>
+                    <th class="px-3.5 py-2.5">Dosya</th>
+                    <th class="px-2 py-2.5 text-center">Satır</th>
+                    <th class="px-2.5 py-2.5">Tip</th>
+                    <th class="px-3.5 py-2.5">Açıklama</th>
+                    <th class="px-2.5 py-2.5">Proje</th>
+                    <th class="px-2.5 py-2.5 text-center">Öncelik</th>
+                  </tr>
+                </thead>
+                <tbody id="code-todos-table-body" class="divide-y divide-[#1F293D]/70">
+                  <!-- Rendered dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Right: Interactive Code Snippet Inspector Pane (5 cols) -->
+          <div class="lg:col-span-5 bg-[#111827] border border-[#1F293D] rounded-2xl p-4 flex flex-col h-full min-h-0 overflow-y-auto shadow-sm" id="code-inspector-pane">
+            <!-- Rendered dynamically via selectCodeTodo() -->
+            <div class="text-center py-20 text-slate-400 text-xs select-none m-auto">
+              <svg class="w-10 h-10 text-slate-500 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke-width="1.8"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+              <p class="font-medium text-slate-300">Kod bloğunu incelemek için sol tablodan bir satıra tıklayın.</p>
+              <p class="text-[11px] text-slate-500 mt-1">İlgili kod parçası satır numaraları ve önizlemesiyle burada açılacaktır.</p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+        <!-- ======================================================== -->
+        <!-- VIEW 6: AYARLAR (MATCHING BOTTOM-RIGHT SCREEN IN MOCKUP) -->
+        <!-- ======================================================== -->
+
+      <!-- VIEW 6: AYARLAR -->
+      <div id="view-container-settings" class="hidden flex-1 flex flex-col p-4 lg:p-5 gap-3 w-full h-full min-h-0 overflow-hidden bg-[#0B0F17]">
+        
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-[#111827] border border-[#1F293D] flex items-center justify-center text-blue-400 shadow-sm">
+              <i data-lucide="settings" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h2 class="text-xl font-bold text-white tracking-tight">Ayarlar & Sistem Yapılandırması</h2>
+              <p class="text-xs text-slate-400">Uygulamanızı kişiselleştirin, GitHub ve Telegram servislerini bağlayın, bildirimleri yönetin.</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="saveSettings()" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-xs transition-all shadow-md shadow-blue-600/30 flex items-center gap-2">
+              <i data-lucide="save" class="w-3.5 h-3.5"></i>
+              <span>Değişiklikleri Kaydet</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Settings Full Page Split View -->
+        <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-5 bg-[#111827] border border-[#1F293D] rounded-2xl p-5 shadow-sm h-full items-stretch">
+          
+          <!-- Left Subnav Tabs -->
+          <div class="lg:col-span-3 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-[#1F293D] pr-0 lg:pr-4 pb-4 lg:pb-0 text-xs font-medium overflow-y-auto min-h-0">
+            <div class="space-y-1.5">
+              <div class="pb-1.5 px-1">
+                <span class="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Yapılandırma Menüsü</span>
+              </div>
+              <button onclick="setSettingsTab('general')" id="stab-general" class="w-full text-left px-3.5 py-2 rounded-xl bg-blue-600 text-white flex items-center gap-2.5 font-semibold shadow-md shadow-blue-600/30">
+                <i data-lucide="sliders" class="w-4 h-4"></i> <span>Genel Ayarlar</span>
+              </button>
+              <button onclick="setSettingsTab('github')" id="stab-github" class="w-full text-left px-3.5 py-2 rounded-xl text-slate-300 hover:bg-[#182234] hover:text-white flex items-center gap-2.5 transition-colors font-medium">
+                <i data-lucide="github" class="w-4 h-4 text-slate-400"></i> <span>GitHub Entegrasyonu</span>
+              </button>
+              <button onclick="setSettingsTab('telegram')" id="stab-telegram" class="w-full text-left px-3.5 py-2 rounded-xl text-slate-300 hover:bg-[#182234] hover:text-white flex items-center gap-2.5 transition-colors font-medium">
+                <i data-lucide="send" class="w-4 h-4 text-sky-400"></i> <span>Telegram Bot & Alarmlar</span>
+              </button>
+              <button onclick="setSettingsTab('sync')" id="stab-sync" class="w-full text-left px-3.5 py-2 rounded-xl text-slate-300 hover:bg-[#182234] hover:text-white flex items-center gap-2.5 transition-colors font-medium">
+                <i data-lucide="refresh-cw" class="w-4 h-4 text-emerald-400"></i> <span>Senkronizasyon & iCal</span>
+              </button>
+              <button onclick="setSettingsTab('priorities')" id="stab-priorities" class="w-full text-left px-3.5 py-2 rounded-xl text-slate-300 hover:bg-[#182234] hover:text-white flex items-center gap-2.5 transition-colors font-medium">
+                <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-400"></i> <span>Öncelikler & SLA</span>
+              </button>
+              <button onclick="setSettingsTab('notifications')" id="stab-notifications" class="w-full text-left px-3.5 py-2 rounded-xl text-slate-300 hover:bg-[#182234] hover:text-white flex items-center gap-2.5 transition-colors font-medium">
+                <i data-lucide="bell" class="w-4 h-4 text-indigo-400"></i> <span>Bildirimler & Ses</span>
+              </button>
+            </div>
+
+            <!-- Quick Integration Status Summary Card -->
+            <div class="pt-4 mt-3 border-t border-[#1F293D] space-y-2">
+              <span class="text-[10px] uppercase font-bold text-slate-500 tracking-wider px-1">Entegrasyon Durumu</span>
+              <div class="bg-[#182234] border border-[#1F293D] rounded-xl p-2.5 space-y-1.5 text-[11px]">
+                <div class="flex items-center justify-between">
+                  <span class="text-slate-400 flex items-center gap-1.5"><i data-lucide="github" class="w-3.5 h-3.5"></i> GitHub:</span>
+                  <span class="text-emerald-400 font-semibold flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Aktif
+                  </span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="text-slate-400 flex items-center gap-1.5"><i data-lucide="send" class="w-3.5 h-3.5 text-sky-400"></i> Telegram:</span>
+                  <span class="text-sky-400 font-semibold flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-sky-400"></span> 4 Alarm Hazır
+                  </span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="text-slate-400 flex items-center gap-1.5"><i data-lucide="clock" class="w-3.5 h-3.5"></i> Zaman Dilimi:</span>
+                  <span class="text-slate-300 font-mono text-[10px]">Europe/Istanbul</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Settings Form Content -->
+          <div class="lg:col-span-9 h-full min-h-0 overflow-y-auto pr-2 space-y-5 flex flex-col justify-between">
+            
+            <!-- Tab 1: Genel Ayarlar -->
+            <div id="spane-general" class="space-y-5 text-xs">
+              <div class="flex items-center justify-between pb-2 border-b border-[#1F293D]">
+                <div>
+                  <h3 class="font-bold text-sm text-white">Genel Sistem ve Arayüz Ayarları</h3>
+                  <p class="text-slate-400 text-[11px] mt-0.5">Uygulamanın dil, tema ve varsayılan proje davranışlarını yapılandırın.</p>
+                </div>
+              </div>
+              
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label class="block text-slate-300 mb-1.5 font-medium">Arayüz Dili</label>
+                  <select class="w-full px-3.5 py-2.5 bg-[#080C14] border border-[#1F293D] rounded-xl text-white focus:border-blue-500 focus:outline-none transition-colors">
+                    <option value="tr">Türkçe (Varsayılan)</option>
+                    <option value="en">English</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-slate-300 mb-1.5 font-medium">Görsel Tema</label>
+                  <select onchange="if(this.value==='dark') document.documentElement.classList.add('dark'); else document.documentElement.classList.remove('dark');" class="w-full px-3.5 py-2.5 bg-[#080C14] border border-[#1F293D] rounded-xl text-white focus:border-blue-500 focus:outline-none transition-colors">
+                    <option value="dark">Koyu Lacivert Obsidiyen (Dark Navy)</option>
+                    <option value="light">Açık Tema (Light)</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-slate-300 mb-1.5 font-medium">Varsayılan Proje</label>
+                  <select id="settings-default-repo-select" class="w-full px-3.5 py-2.5 bg-[#080C14] border border-[#1F293D] rounded-xl text-white focus:border-blue-500 focus:outline-none transition-colors">
+                    <option value="">Tüm Projeler (Genel)</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Switches matching Mockup -->
+              <div class="space-y-3 pt-3 border-t border-[#1F293D]">
+                <h4 class="text-xs font-semibold text-slate-200">Arayüz Tercihleri</h4>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div class="p-3.5 rounded-xl bg-[#182234] border border-[#1F293D] flex items-center justify-between">
+                    <div>
+                      <span class="text-white font-medium block">Başlangıçta Son Proje Açılsın</span>
+                      <span class="text-[11px] text-slate-400">En son çalıştığınız panoyu otomatik hatırlar</span>
+                    </div>
+                    <input type="checkbox" checked class="w-4 h-4 rounded text-blue-600 bg-[#080C14] border-[#1F293D] focus:ring-0">
+                  </div>
+
+                  <div class="p-3.5 rounded-xl bg-[#182234] border border-[#1F293D] flex items-center justify-between">
+                    <div>
+                      <span class="text-white font-medium block">Masaüstü Ses Bildirimleri</span>
+                      <span class="text-[11px] text-slate-400">Pomodoro ve kritik alarmlarda ses çalar</span>
+                    </div>
+                    <input type="checkbox" checked class="w-4 h-4 rounded text-blue-600 bg-[#080C14] border-[#1F293D] focus:ring-0">
+                  </div>
+
+                  <div class="p-3.5 rounded-xl bg-[#182234] border border-[#1F293D] flex items-center justify-between">
+                    <div>
+                      <span class="text-white font-medium block">Geciken Görevlerde Kırmızı Uyarı</span>
+                      <span class="text-[11px] text-slate-400">Son teslim tarihi geçen görevleri vurgular</span>
+                    </div>
+                    <input type="checkbox" checked class="w-4 h-4 rounded text-blue-600 bg-[#080C14] border-[#1F293D] focus:ring-0">
+                  </div>
+
+                  <div class="p-3.5 rounded-xl bg-[#182234] border border-[#1F293D] flex items-center justify-between">
+                    <div>
+                      <span class="text-white font-medium block">Göreceli Zaman Sayacı</span>
+                      <span class="text-[11px] text-slate-400">"2 saat önce", "yarın" gibi akıllı format</span>
+                    </div>
+                    <input type="checkbox" checked class="w-4 h-4 rounded text-blue-600 bg-[#080C14] border-[#1F293D] focus:ring-0">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab 2: GitHub Ayarları -->
+            <div id="spane-github" class="hidden space-y-4 text-xs">
+              <div class="flex items-center justify-between pb-2 border-b border-[#1F293D]">
+                <div>
+                  <h3 class="font-bold text-sm text-white flex items-center gap-2">
+                    <i data-lucide="github" class="w-4 h-4 text-blue-400"></i> GitHub Entegrasyonu & Depo Erişimi
+                  </h3>
+                  <p class="text-slate-400 text-[11px] mt-0.5">GitHub API erişimi için Personal Access Token ve kullanıcı bilgilerinizi girin.</p>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-slate-300 mb-1.5 font-medium">GitHub Personal Access Token (PAT)</label>
+                <input type="password" id="input-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" class="w-full px-3.5 py-2.5 bg-[#080C14] border border-[#1F293D] rounded-xl text-white font-mono text-xs focus:border-blue-500 focus:outline-none transition-colors" />
+                <span class="text-[10px] text-slate-400 mt-1 block">Depoları okumak ve Markdown/Issue yönetimi için <code class="text-blue-400">repo</code> izni yeterlidir.</span>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-slate-300 mb-1.5 font-medium">GitHub Kullanıcı Adı / Organizasyon</label>
+                  <input type="text" id="input-username" placeholder="Okanipk" class="w-full px-3.5 py-2.5 bg-[#080C14] border border-[#1F293D] rounded-xl text-white text-xs focus:border-blue-500 focus:outline-none transition-colors" />
+                </div>
+                <div>
+                  <label class="block text-slate-300 mb-1.5 font-medium">Aranacak TODO Dosyası</label>
+                  <input type="text" id="input-target-file" value="yapilacaklar.md" class="w-full px-3.5 py-2.5 bg-[#080C14] border border-[#1F293D] rounded-xl text-white font-mono text-xs focus:border-blue-500 focus:outline-none transition-colors" />
+                </div>
+              </div>
+
+              <!-- Task Source Selection -->
+              <div>
+                <label class="block text-slate-300 mb-1.5 font-medium">Görev Verisi Kaynağı</label>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <label class="p-3 rounded-xl bg-[#182234] border border-[#1F293D] flex items-center gap-3 cursor-pointer hover:border-blue-500/50 transition-colors">
+                    <input type="radio" name="setting-task-source" value="issues" checked class="w-4 h-4 text-blue-600 bg-[#080C14] border-[#1F293D] focus:ring-0">
+                    <div>
+                      <span class="text-white font-bold block">GitHub Issues (Önerilen)</span>
+                      <span class="text-[11px] text-slate-400">Depolardaki Issue ve PR'ları doğrudan görev panosuna aktarır</span>
+                    </div>
+                  </label>
+                  <label class="p-3 rounded-xl bg-[#182234] border border-[#1F293D] flex items-center gap-3 cursor-pointer hover:border-blue-500/50 transition-colors">
+                    <input type="radio" name="setting-task-source" value="markdown" class="w-4 h-4 text-blue-600 bg-[#080C14] border-[#1F293D] focus:ring-0">
+                    <div>
+                      <span class="text-white font-bold block">Markdown Dosyası (yapilacaklar.md)</span>
+                      <span class="text-[11px] text-slate-400">Depo içindeki .md kontrol listelerini ayrıştırır</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <div class="pt-2 flex flex-wrap items-center gap-3">
+                <button onclick="testGitHubConnection()" id="btn-test-conn" class="px-4 py-2.5 bg-[#182234] hover:bg-[#1F2C42] text-white border border-[#1F293D] rounded-xl font-medium transition-colors flex items-center space-x-2">
+                  <i data-lucide="github" class="w-4 h-4 text-blue-400"></i>
+                  <span>GitHub Bağlantısını Test Et</span>
+                </button>
+                <label class="flex items-center gap-2 text-slate-400 cursor-pointer">
+                  <input type="checkbox" id="clear-github-token" class="w-4 h-4 rounded text-rose-600 bg-[#080C14] border-[#1F293D] focus:ring-0"> 
+                  <span class="text-rose-400">Kayıtlı PAT Token'ı Sil</span>
+                </label>
+              </div>
+
+              <div id="test-connection-status" class="hidden p-3.5 rounded-xl"></div>
+            </div>
+
+            <!-- Tab 3: Telegram Ayarları -->
+            <div id="spane-telegram" class="hidden space-y-4 text-xs">
+              <div class="flex items-center justify-between pb-2 border-b border-[#1F293D]">
+                <div>
+                  <h3 class="font-bold text-sm text-sky-400 flex items-center gap-2">
+                    <i data-lucide="send" class="w-4 h-4"></i> Telegram Bot & Otomasyon Alarmları
+                  </h3>
+                  <p class="text-slate-400 text-[11px] mt-0.5">Kritik P1 görevleri, sabah özetleri ve teslimat uyarıları için Telegram botunuzu yapılandırın.</p>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-slate-300 mb-1.5 font-medium">Telegram Bot Token (@BotFather)</label>
+                <div class="flex gap-2">
+                  <input type="password" id="input-telegram-token" placeholder="9040763556:AAHxxxxxxxx" class="flex-1 px-3.5 py-2.5 bg-[#080C14] border border-[#1F293D] rounded-xl text-white font-mono text-xs focus:border-blue-500 focus:outline-none transition-colors" />
+                  <button type="button" onclick="testTelegramConnection()" id="btn-test-tg-quick" class="px-4 py-2.5 bg-sky-600 hover:bg-sky-500 text-white rounded-xl font-semibold transition-colors shrink-0 shadow-md shadow-sky-600/20">
+                    Doğrula & Başlat
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-slate-300 mb-1.5 font-medium">Telegram Chat ID (Sohbet Kimliği)</label>
+                <div class="flex gap-2">
+                  <input type="text" id="input-telegram-chat" placeholder="5303041377" class="flex-1 px-3.5 py-2.5 bg-[#080C14] border border-[#1F293D] rounded-xl text-white font-mono text-xs focus:border-blue-500 focus:outline-none transition-colors" />
+                  <button type="button" onclick="detectTelegramChatId()" id="btn-detect-tg-chat" class="px-4 py-2.5 bg-[#182234] hover:bg-[#1F2C42] text-slate-200 border border-[#1F293D] rounded-xl transition-colors shrink-0 font-medium">
+                    Chat ID'yi Otomatik Bul
+                  </button>
+                </div>
+              </div>
+
+              <!-- 4 Notification Automations Grid with Direct Test Buttons -->
+              <div class="p-4 rounded-xl bg-[#182234] border border-[#1F293D] space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-white text-xs flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400"></span> 4 Aktif Otomatik Bildirim Sistemi & Hızlı Test:
+                  </span>
+                  <span class="text-[10px] text-slate-400">Telegram Botu üzerinden gönderilir</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+                  <!-- 1. Sabah Özeti -->
+                  <div class="p-3 rounded-xl bg-[#080C14] border border-[#1F293D] flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                      <span class="text-base">🌅</span>
+                      <div>
+                        <span class="font-bold text-white block">09:00 Sabah Özeti</span>
+                        <span class="text-[10px] text-slate-400">Günün kritik görevleri & hava durumu</span>
+                      </div>
+                    </div>
+                    <button onclick="sendTelegramDigest('morning')" class="px-2.5 py-1.5 bg-[#182234] hover:bg-[#1F2C42] text-sky-400 border border-[#1F293D] rounded-lg text-[10px] font-semibold transition-colors shrink-0">
+                      Test Gönder
+                    </button>
+                  </div>
+
+                  <!-- 2. P1 Alarmı -->
+                  <div class="p-3 rounded-xl bg-[#080C14] border border-rose-500/30 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                      <span class="text-base">🚨</span>
+                      <div>
+                        <span class="font-bold text-rose-400 block">Anlık P1 Alarmı</span>
+                        <span class="text-[10px] text-slate-400">Kritik hata açılınca anında tetiklenir</span>
+                      </div>
+                    </div>
+                    <button onclick="sendTelegramDigest('p1')" class="px-2.5 py-1.5 bg-rose-500/15 hover:bg-rose-500/25 text-rose-400 border border-rose-500/30 rounded-lg text-[10px] font-semibold transition-colors shrink-0">
+                      Alarm Test
+                    </button>
+                  </div>
+
+                  <!-- 3. Teslimat Uyarısı -->
+                  <div class="p-3 rounded-xl bg-[#080C14] border border-[#1F293D] flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                      <span class="text-base">⏰</span>
+                      <div>
+                        <span class="font-bold text-white block">16:00 Teslimat Uyarısı</span>
+                        <span class="text-[10px] text-slate-400">Yarına sarkan ve yaklaşan işler</span>
+                      </div>
+                    </div>
+                    <button onclick="sendTelegramDigest('deadline')" class="px-2.5 py-1.5 bg-[#182234] hover:bg-[#1F2C42] text-sky-400 border border-[#1F293D] rounded-lg text-[10px] font-semibold transition-colors shrink-0">
+                      Test Gönder
+                    </button>
+                  </div>
+
+                  <!-- 4. Gün Sonu Raporu -->
+                  <div class="p-3 rounded-xl bg-[#080C14] border border-[#1F293D] flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                      <span class="text-base">🌆</span>
+                      <div>
+                        <span class="font-bold text-white block">18:00 Gün Sonu Kapanış</span>
+                        <span class="text-[10px] text-slate-400">Tamamlanan görevler & sprint özeti</span>
+                      </div>
+                    </div>
+                    <button onclick="sendTelegramDigest('evening')" class="px-2.5 py-1.5 bg-[#182234] hover:bg-[#1F2C42] text-sky-400 border border-[#1F293D] rounded-lg text-[10px] font-semibold transition-colors shrink-0">
+                      Test Gönder
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div id="telegram-connection-status" class="hidden p-3.5 rounded-xl"></div>
+            </div>
+
+            <!-- Tab 4: Senkronizasyon & iCal -->
+            <div id="spane-sync" class="hidden space-y-4 text-xs">
+              <div class="flex items-center justify-between pb-2 border-b border-[#1F293D]">
+                <div>
+                  <h3 class="font-bold text-sm text-white">Senkronizasyon & Dış Takvim (iCal)</h3>
+                  <p class="text-slate-400 text-[11px] mt-0.5">Otomatik veri yenileme ve Google / Apple Calendar canlı abonelik bağlantıları.</p>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-slate-300 mb-1.5 font-medium">Otomatik Senkronizasyon Sıklığı</label>
+                  <select class="w-full px-3.5 py-2.5 bg-[#080C14] border border-[#1F293D] rounded-xl text-white focus:border-blue-500 focus:outline-none transition-colors">
+                    <option value="2">2 dakikada bir (Önerilen)</option>
+                    <option value="5">5 dakikada bir</option>
+                    <option value="15">15 dakikada bir</option>
+                    <option value="30">30 dakikada bir</option>
+                    <option value="manual">Sadece Manuel</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-slate-300 mb-1.5 font-medium">Yerel Proje Tarama Klasörü</label>
+                  <input type="text" id="input-scan-root" placeholder="C:\Users\BISPC7\Desktop\Asist" class="w-full px-3.5 py-2.5 bg-[#080C14] border border-[#1F293D] rounded-xl text-white font-mono text-xs focus:border-blue-500 focus:outline-none transition-colors" />
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-slate-300 mb-1.5 font-medium">Dışarıdan Erişilebilir Temel Adres (Webhook / iCal)</label>
+                <input type="url" id="input-calendar-url" placeholder="https://tasks.example.com" class="w-full px-3.5 py-2.5 bg-[#080C14] border border-[#1F293D] rounded-xl text-white text-xs focus:border-blue-500 focus:outline-none transition-colors" />
+                <span class="text-[10px] text-slate-400 mt-1 block">Dış takvim uygulamalarının senkronize olması için genel alan adınızı girin.</span>
+              </div>
+
+              <!-- iCal Subscription Box -->
+              <div class="p-4 rounded-xl bg-[#182234] border border-[#1F293D] space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-white text-xs flex items-center gap-1.5">
+                    <i data-lucide="calendar" class="w-4 h-4 text-blue-400"></i> Canlı iCal (.ics) Takvim Abonelik Bağlantısı
+                  </span>
+                  <a href="/api/calendar/subscribe" target="_blank" class="text-blue-400 hover:text-blue-300 text-[11px] underline">.ics İndir</a>
+                </div>
+                <p class="text-[11px] text-slate-400">Bu bağlantıyı Google Calendar, Apple Calendar veya Outlook'a ekleyerek tüm teslimatları telefonunuzdan takip edebilirsiniz:</p>
+                <div class="flex gap-2 pt-1">
+                  <input type="text" readonly value="http://localhost:3000/api/calendar/subscribe" id="ical-copy-input" class="flex-1 px-3 py-2 bg-[#080C14] border border-[#1F293D] rounded-xl text-slate-300 font-mono text-[11px] select-all" />
+                  <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('ical-copy-input').value); showToast('iCal bağlantısı kopyalandı!', 'success');" class="px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold transition-colors shrink-0">
+                    Kopyala
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab 5: Öncelikler & SLA -->
+            <div id="spane-priorities" class="hidden space-y-4 text-xs">
+              <div class="flex items-center justify-between pb-2 border-b border-[#1F293D]">
+                <div>
+                  <h3 class="font-bold text-sm text-white">Öncelik Derecelendirme (P1 - P4) & SLA Ayarları</h3>
+                  <p class="text-slate-400 text-[11px] mt-0.5">Görev önceliklerinin kurallarını, bildirim tetikleyicilerini ve çözüm hedeflerini yapılandırın.</p>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                <!-- P1 -->
+                <div class="p-4 rounded-xl bg-[#182234] border border-rose-500/30 space-y-2">
+                  <div class="flex items-center justify-between">
+                    <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-rose-500/15 text-rose-400 border border-rose-500/30">
+                      P1 - Acil & Kritik
+                    </span>
+                    <span class="text-[11px] text-rose-400 font-semibold">SLA: 24 Saat</span>
+                  </div>
+                  <p class="text-[11px] text-slate-300">Sistem kesintileri, güvenlik açıkları ve kritik buglar. Oluşturulduğu anda Telegram'dan acil alarm tetikler.</p>
+                </div>
+
+                <!-- P2 -->
+                <div class="p-4 rounded-xl bg-[#182234] border border-orange-500/30 space-y-2">
+                  <div class="flex items-center justify-between">
+                    <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-orange-500/15 text-orange-400 border border-orange-500/30">
+                      P2 - Normal & Standart
+                    </span>
+                    <span class="text-[11px] text-orange-400 font-semibold">SLA: 3 Gün</span>
+                  </div>
+                  <p class="text-[11px] text-slate-300">Temel ürün özellikleri, API geliştirmeleri ve rutin geliştirmeler. Günlük bültenlerde listelenir.</p>
+                </div>
+
+                <!-- P3 -->
+                <div class="p-4 rounded-xl bg-[#182234] border border-sky-500/30 space-y-2">
+                  <div class="flex items-center justify-between">
+                    <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-sky-500/15 text-sky-400 border border-sky-500/30">
+                      P3 - Düşük Öncelik
+                    </span>
+                    <span class="text-[11px] text-sky-400 font-semibold">SLA: 1 Hafta</span>
+                  </div>
+                  <p class="text-[11px] text-slate-300">UI kozmetik iyileştirmeleri, refactoring ve kod kalitesi geliştirmeleri. Haftalık raporda özetlenir.</p>
+                </div>
+
+                <!-- P4 -->
+                <div class="p-4 rounded-xl bg-[#182234] border border-[#1F293D] space-y-2">
+                  <div class="flex items-center justify-between">
+                    <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700">
+                      P4 - Fikir & Backlog
+                    </span>
+                    <span class="text-[11px] text-slate-400 font-semibold">SLA: Belirsiz</span>
+                  </div>
+                  <p class="text-[11px] text-slate-400">Gelecek dönem fikirleri, teknik borç notları ve araştırma görevleri.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab 6: Bildirimler & Ses -->
+            <div id="spane-notifications" class="hidden space-y-4 text-xs">
+              <div class="flex items-center justify-between pb-2 border-b border-[#1F293D]">
+                <div>
+                  <h3 class="font-bold text-sm text-white">Masaüstü, Tarayıcı ve Ses Bildirimleri</h3>
+                  <p class="text-slate-400 text-[11px] mt-0.5">Uygulama içi ses efektlerini ve tarayıcı push bildirimlerini yönetin.</p>
+                </div>
+              </div>
+
+              <div class="p-4 rounded-xl bg-[#182234] border border-[#1F293D] flex items-center justify-between">
+                <div>
+                  <span class="text-white font-bold block text-sm">Tarayıcı Bildirim İzni</span>
+                  <span class="text-[11px] text-slate-400">Sekme arka plandayken teslimat ve Pomodoro alarmlarını göster</span>
+                </div>
+                <button type="button" onclick="if(Notification.permission!=='granted'){Notification.requestPermission().then(p=>showToast('Bildirim izni: '+p,'info'))}else{showToast('Bildirim izni zaten verilmiş!','success')}" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-semibold transition-colors">
+                  İzin İste / Test Et
+                </button>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-slate-300 mb-1.5 font-medium">Pomodoro Seans Sonu Zil Sesi</label>
+                  <select class="w-full px-3.5 py-2.5 bg-[#080C14] border border-[#1F293D] rounded-xl text-white focus:border-blue-500 focus:outline-none transition-colors">
+                    <option value="chime">Modern Dijital Chime (Varsayılan)</option>
+                    <option value="bell">Klasik Çan</option>
+                    <option value="marimba">Hafif Marimba</option>
+                    <option value="none">Sessiz (Yalnızca Görsel)</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-slate-300 mb-1.5 font-medium">Ses Seviyesi</label>
+                  <input type="range" min="0" max="100" value="75" class="w-full mt-2 accent-blue-500" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Bar at bottom -->
+            <div class="pt-5 border-t border-[#1F293D] flex items-center justify-between">
+              <span class="text-xs text-slate-400">Yaptığınız değişiklikler anında kaydedilir ve senkronize edilir.</span>
+              <button onclick="saveSettings()" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-xs transition-colors shadow-lg shadow-blue-600/30 flex items-center gap-2">
+                <i data-lucide="check" class="w-4 h-4"></i>
+                <span>Değişiklikleri Kaydet</span>
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+        <!-- ======================================================== -->
+        <!-- VIEW 7: ANALİTİK                                        -->
+        <!-- ======================================================== -->
+
+      <!-- VIEW 7: ANALİTİK -->
+      <div id="view-container-analytics" class="hidden flex-1 flex flex-col p-4 lg:p-5 gap-3 w-full h-full min-h-0 overflow-hidden bg-[#080C14]">
+        
+        <!-- Title & Date Filter Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
+          <div>
+            <h1 class="text-xl lg:text-2xl font-bold tracking-tight text-white">Analitik</h1>
+            <p class="text-xs text-slate-400 mt-0.5">Projelerinizin performansını takip edin.</p>
+          </div>
+          <!-- Time Range Selector -->
+          <div class="relative inline-block text-left shrink-0">
+            <button class="inline-flex items-center justify-between gap-2 px-3.5 py-1.5 bg-[#0F172A] border border-[#1E293B] rounded-lg text-xs font-medium text-slate-200 hover:bg-[#162138] focus:outline-none transition-all" type="button">
+              <span>Son 30 gün</span>
+              <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- BEGIN: MetricCardsSection -->
+        <section aria-label="Temel Metrikler" class="grid grid-cols-2 lg:grid-cols-4 gap-3 shrink-0">
+          <!-- Metric 1: Toplam Görev -->
+          <div class="bg-[#0F172A] border border-[#1E293B] rounded-xl p-3.5 relative overflow-hidden transition-all hover:border-slate-700/60">
+            <div class="text-[11px] font-medium text-slate-400 tracking-wide">Toplam Görev</div>
+            <div class="mt-1.5 flex items-baseline justify-between">
+              <span class="text-2xl font-bold text-white tracking-tight" id="analytics-metric-total">124</span>
+              <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">
+                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path d="M5 10l7-7m0 0l7 7m-7-7v18" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+                </svg>
+                12%
+              </span>
+            </div>
+            <div class="mt-1 text-[10px] text-slate-500">Önceki döneme göre artış</div>
+          </div>
+
+          <!-- Metric 2: Tamamlanan -->
+          <div class="bg-[#0F172A] border border-[#1E293B] rounded-xl p-3.5 relative overflow-hidden transition-all hover:border-slate-700/60">
+            <div class="text-[11px] font-medium text-slate-400 tracking-wide">Tamamlanan</div>
+            <div class="mt-1.5 flex items-baseline justify-between">
+              <span class="text-2xl font-bold text-white tracking-tight" id="analytics-metric-completed">86</span>
+              <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">
+                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path d="M5 10l7-7m0 0l7 7m-7-7v18" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+                </svg>
+                18%
+              </span>
+            </div>
+            <div class="mt-1 text-[10px] text-slate-500">Hedeflenen tamamlama hızı</div>
+          </div>
+
+          <!-- Metric 3: Geciken -->
+          <div class="bg-[#0F172A] border border-[#1E293B] rounded-xl p-3.5 relative overflow-hidden transition-all hover:border-slate-700/60">
+            <div class="text-[11px] font-medium text-slate-400 tracking-wide">Geciken</div>
+            <div class="mt-1.5 flex items-baseline justify-between">
+              <span class="text-2xl font-bold text-white tracking-tight" id="analytics-metric-overdue">21</span>
+              <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-orange-400 bg-orange-500/10 px-1.5 py-0.5 rounded">
+                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path d="M19 14l-7 7m0 0l-7-7m7 7V3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+                </svg>
+                6%
+              </span>
+            </div>
+            <div class="mt-1 text-[10px] text-slate-500">Teslimi aşan görevler</div>
+          </div>
+
+          <!-- Metric 4: Kritik -->
+          <div class="bg-[#0F172A] border border-[#1E293B] rounded-xl p-3.5 relative overflow-hidden transition-all hover:border-slate-700/60">
+            <div class="text-[11px] font-medium text-slate-400 tracking-wide">Kritik</div>
+            <div class="mt-1.5 flex items-baseline justify-between">
+              <span class="text-2xl font-bold text-white tracking-tight" id="analytics-metric-critical">9</span>
+              <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-rose-400 bg-rose-500/10 px-1.5 py-0.5 rounded">
+                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path d="M19 14l-7 7m0 0l-7-7m7 7V3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+                </svg>
+                3%
+              </span>
+            </div>
+            <div class="mt-1 text-[10px] text-slate-500">Acil müdahale bekleyen</div>
+          </div>
+        </section>
+        <!-- END: MetricCardsSection -->
+
+        <!-- BEGIN: ChartsSection -->
+        <section aria-label="Grafik Verileri" class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-3 gap-3.5 h-full items-stretch">
+          <!-- Left Chart: Tamamlanan Görevler (Line Chart) -->
+          <div class="lg:col-span-2 bg-[#0F172A] border border-[#1E293B] rounded-xl p-4 flex flex-col justify-between h-full min-h-0" data-purpose="tasks-trend-chart">
+            <div class="flex flex-col h-full min-h-0">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-2 gap-2 shrink-0">
+                <h2 class="text-sm font-semibold text-white">Tamamlanan Görevler</h2>
+                <!-- Projects Multi-Line Legend -->
+                <div id="analytics-line-legend" class="flex items-center flex-wrap gap-3 text-xs text-slate-300">
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-cyan-400 shadow-sm shadow-cyan-400/50"></span>
+                    <span class="text-[11px]">FamApp</span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-blue-500 shadow-sm shadow-blue-500/50"></span>
+                    <span class="text-[11px]">TenderAgent</span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-purple-500 shadow-sm shadow-purple-500/50"></span>
+                    <span class="text-[11px]">Sector 9</span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-orange-400 shadow-sm shadow-orange-400/50"></span>
+                    <span class="text-[11px]">Market Idle</span>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- SVG Line Chart Canvas Area -->
+              <div class="relative w-full flex-1 min-h-[140px] max-h-[220px] my-auto">
+                <svg class="w-full h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 600 240">
+                  <defs>
+                    <!-- Cyan Gradient Fill -->
+                    <linearGradient id="cyanGradient" x1="0" x2="0" y1="0" y2="1">
+                      <stop offset="0%" stop-color="#06B6D4" stop-opacity="0.3"></stop>
+                      <stop offset="100%" stop-color="#06B6D4" stop-opacity="0.0"></stop>
+                    </linearGradient>
+                  </defs>
+                  <!-- Horizontal Grid Lines & Y-Labels -->
+                  <!-- 60 -->
+                  <g class="text-[11px] fill-slate-400">
+                    <line stroke="#1E293B" stroke-dasharray="3 3" stroke-width="1" x1="30" x2="590" y1="20" y2="20"></line>
+                    <text x="5" y="24">60</text>
+                  </g>
+                  <!-- 40 -->
+                  <g class="text-[11px] fill-slate-400">
+                    <line stroke="#1E293B" stroke-dasharray="3 3" stroke-width="1" x1="30" x2="590" y1="80" y2="80"></line>
+                    <text x="5" y="84">40</text>
+                  </g>
+                  <!-- 20 -->
+                  <g class="text-[11px] fill-slate-400">
+                    <line stroke="#1E293B" stroke-dasharray="3 3" stroke-width="1" x1="30" x2="590" y1="140" y2="140"></line>
+                    <text x="5" y="144">20</text>
+                  </g>
+                  <!-- 0 Baseline -->
+                  <g class="text-[11px] fill-slate-400">
+                    <line stroke="#1E293B" stroke-width="1" x1="30" x2="590" y1="200" y2="200"></line>
+                    <text x="12" y="204">0</text>
+                  </g>
+                  <!-- FamApp Trend (Cyan Glow Line) -->
+                  <path class="glow-cyan" d="M 50 170 C 120 160, 160 140, 200 135 C 260 130, 310 95, 360 85 C 430 70, 500 55, 570 30" fill="none" stroke="#06B6D4" stroke-linecap="round" stroke-width="3"></path>
+                  <!-- FamApp Fill Area -->
+                  <path d="M 50 170 C 120 160, 160 140, 200 135 C 260 130, 310 95, 360 85 C 430 70, 500 55, 570 30 L 570 200 L 50 200 Z" fill="url(#cyanGradient)"></path>
+                  <!-- TenderAgent Trend (Blue Line) -->
+                  <path class="glow-blue" d="M 50 185 C 130 180, 190 165, 230 150 C 300 120, 380 130, 440 100 C 490 75, 530 65, 570 50" fill="none" stroke="#2563EB" stroke-linecap="round" stroke-width="2.5"></path>
+                  <!-- Sector 9 Trend (Purple Line) -->
+                  <path class="glow-purple" d="M 50 190 C 120 188, 170 170, 220 172 C 300 175, 360 145, 430 130 C 490 120, 530 115, 570 85" fill="none" stroke="#8B5CF6" stroke-linecap="round" stroke-width="2.5"></path>
+                  <!-- Market Idle Trend (Orange Line) -->
+                  <path class="glow-orange" d="M 50 195 C 130 192, 190 180, 250 165 C 320 145, 390 160, 460 145 C 510 135, 545 130, 570 110" fill="none" stroke="#F97316" stroke-linecap="round" stroke-width="2.5"></path>
+                  <!-- Data Point Nodes with Glow -->
+                  <circle cx="570" cy="30" fill="#06B6D4" r="4" stroke="#080C14" stroke-width="2"></circle>
+                  <circle cx="570" cy="50" fill="#2563EB" r="3.5" stroke="#080C14" stroke-width="2"></circle>
+                  <circle cx="570" cy="85" fill="#8B5CF6" r="3.5" stroke="#080C14" stroke-width="2"></circle>
+                  <circle cx="570" cy="110" fill="#F97316" r="3.5" stroke="#080C14" stroke-width="2"></circle>
+                </svg>
+              </div>
+              <!-- X-Axis Date Labels -->
+              <div class="flex justify-between pl-8 pr-4 text-[11px] font-medium text-slate-400 shrink-0">
+                <span>1 Eki</span>
+                <span>7 Eki</span>
+                <span>14 Eki</span>
+                <span>21 Eki</span>
+                <span>28 Eki</span>
+              </div>
+            </div>
+            <!-- Footer indicator in card -->
+            <div class="pt-2.5 border-t border-[#162138] mt-2 flex items-center justify-between text-xs text-slate-400 shrink-0">
+              <span class="flex items-center gap-1.5 text-[11px]">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                Tüm veriler anlık GitHub webhook üzerinden güncellenmektedir.
+              </span>
+              <a class="text-blue-400 hover:text-blue-300 font-medium transition-colors cursor-pointer text-[11px]" onclick="switchView('kanban')">Detaylı Rapor →</a>
+            </div>
+          </div>
+
+          <!-- Right Chart: Proje Dağılımı (Donut Chart) -->
+          <div class="bg-[#0F172A] border border-[#1E293B] rounded-xl p-4 flex flex-col justify-between h-full min-h-0" data-purpose="project-distribution-chart">
+            <div class="flex flex-col h-full min-h-0">
+              <div class="flex items-center justify-between pb-2 shrink-0">
+                <h2 class="text-sm font-semibold text-white">Proje Dağılımı</h2>
+                <span class="text-[11px] text-slate-400">Yüzdelik pay</span>
+              </div>
+              <!-- SVG Donut Chart with Centered Metric -->
+              <div class="relative flex items-center justify-center my-auto shrink-0">
+                <svg id="analytics-donut-svg" class="w-36 h-36 xl:w-40 xl:h-40 -rotate-90" viewBox="0 0 100 100">
+                  <!-- Background Track -->
+                  <circle cx="50" cy="50" fill="none" r="38" stroke="#162138" stroke-width="9"></circle>
+                  <!-- Segment 1: FamApp (34%) -> Stroke Dasharray: 2 * PI * 38 = ~238.76. 34% = 81.18 -->
+                  <circle class="glow-cyan" cx="50" cy="50" fill="none" r="38" stroke="#06B6D4" stroke-dasharray="81.18 238.76" stroke-dashoffset="0" stroke-linecap="round" stroke-width="9"></circle>
+                  <!-- Segment 2: TenderAgent (28%) -> 28% = 66.85, Offset: -81.18 -->
+                  <circle class="glow-blue" cx="50" cy="50" fill="none" r="38" stroke="#2563EB" stroke-dasharray="66.85 238.76" stroke-dashoffset="-84" stroke-linecap="round" stroke-width="9"></circle>
+                  <!-- Segment 3: Sector 9 (22%) -> 22% = 52.52, Offset: -(81.18 + 66.85) = -148.03 -->
+                  <circle class="glow-purple" cx="50" cy="50" fill="none" r="38" stroke="#8B5CF6" stroke-dasharray="52.52 238.76" stroke-dashoffset="-154" stroke-linecap="round" stroke-width="9"></circle>
+                  <!-- Segment 4: Market Idle (16%) -> 16% = 38.2, Offset: -(148.03 + 52.52) = -200.55 -->
+                  <circle class="glow-orange" cx="50" cy="50" fill="none" r="38" stroke="#F97316" stroke-dasharray="35 238.76" stroke-dashoffset="-208" stroke-linecap="round" stroke-width="9"></circle>
+                </svg>
+                <!-- Center Metric Text -->
+                <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                  <span class="text-xl font-bold text-white tracking-tight" id="analytics-donut-total">124</span>
+                  <span class="text-[10px] text-slate-400 font-medium">Görev</span>
+                </div>
+              </div>
+              <!-- Distribution Legend List -->
+              <div class="mt-2 space-y-1.5 shrink-0" id="analytics-donut-legend">
+                <!-- FamApp -->
+                <div class="flex items-center justify-between text-xs py-0.5 px-2 rounded hover:bg-[#131D33] transition-colors">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+                    <span class="text-slate-300 font-medium text-[11px]">FamApp</span>
+                  </div>
+                  <span class="text-slate-200 font-semibold font-mono text-[11px]">34%</span>
+                </div>
+                <!-- TenderAgent -->
+                <div class="flex items-center justify-between text-xs py-0.5 px-2 rounded hover:bg-[#131D33] transition-colors">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                    <span class="text-slate-300 font-medium text-[11px]">TenderAgent</span>
+                  </div>
+                  <span class="text-slate-200 font-semibold font-mono text-[11px]">28%</span>
+                </div>
+                <!-- Sector 9 -->
+                <div class="flex items-center justify-between text-xs py-0.5 px-2 rounded hover:bg-[#131D33] transition-colors">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+                    <span class="text-slate-300 font-medium text-[11px]">Sector 9</span>
+                  </div>
+                  <span class="text-slate-200 font-semibold font-mono text-[11px]">22%</span>
+                </div>
+                <!-- Market Idle -->
+                <div class="flex items-center justify-between text-xs py-0.5 px-2 rounded hover:bg-[#131D33] transition-colors">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-orange-400"></span>
+                    <span class="text-slate-300 font-medium text-[11px]">Market Idle</span>
+                  </div>
+                  <span class="text-slate-200 font-semibold font-mono text-[11px]">16%</span>
+                </div>
+              </div>
+            </div>
+            <!-- Distribution Info -->
+            <div class="pt-2 border-t border-[#162138] mt-1.5 text-center shrink-0">
+              <span class="text-[10px] text-slate-500">Toplam 4 aktif projede görev yükü dengesi</span>
+            </div>
+          </div>
+        </section>
+        <!-- END: ChartsSection -->
+
+      </div>
+
+      <!-- Compatibility Placeholder for insights view container -->
+      <div id="view-container-insights" class="hidden"></div>
+
+    </div>
+    <!-- END: VIEWS VIEWPORT CONTAINER -->
+
+  </div>
+  <!-- END: MainLayoutWrapper -->
+
+  <!-- ========================================== -->
+  <!-- MODALS (ADD TASK, DAY AGENDA)              -->
+  <!-- ========================================== -->
+
+  <!-- PROJECT INSIGHTS, BUGS, RECOMMENDATIONS & IDEAS MODAL -->
+  <div id="project-insights-modal" class="fixed inset-0 z-50 bg-slate-950/65 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-[#111827] border border-[#1F293D] max-w-2xl w-full rounded-2xl p-6 space-y-4 shadow-2xl flex flex-col max-h-[90vh]">
+      <!-- Header -->
+      <div class="flex items-start justify-between pb-3 border-b border-[#1F293D] shrink-0">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] uppercase font-bold text-amber-400 tracking-wider flex items-center gap-1">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
+              Proje Analizi, Öneriler & Fikirler
+            </span>
+            <span id="insights-health-badge" class="text-[11px] font-bold px-2 py-0.5 rounded-lg health-pill-A">
+              Skor: A+ (95)
+            </span>
+          </div>
+          <h3 id="insights-project-name" class="text-lg font-bold text-white mt-0.5">TenderAgent</h3>
+          <p id="insights-project-desc" class="text-xs text-slate-400 mt-0.5 line-clamp-1">API Gateway ve Kimlik Doğrulama Servisi</p>
+        </div>
+        <button onclick="closeProjectInsightsModal()" class="text-slate-400 hover:text-white p-1">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <div class="flex items-center gap-1.5 p-1 bg-[#080C14] border border-[#1F293D] rounded-xl text-xs shrink-0">
+        <button id="insights-tab-bugs" onclick="switchInsightsTab('bugs')" class="flex-1 py-1.5 px-3 rounded-lg font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/30 flex items-center justify-center gap-1.5 transition-all cursor-pointer">
+          <i data-lucide="alert-octagon" class="w-3.5 h-3.5 text-rose-400"></i>
+          <span>Hatalar & Riskler</span>
+          <span id="insights-count-bugs" class="ml-1 px-1.5 py-0.2 rounded-full bg-rose-500/30 text-[10px]">0</span>
+        </button>
+        <button id="insights-tab-suggestions" onclick="switchInsightsTab('suggestions')" class="flex-1 py-1.5 px-3 rounded-lg font-medium text-slate-400 hover:text-white flex items-center justify-center gap-1.5 transition-all cursor-pointer">
+          <i data-lucide="lightbulb" class="w-3.5 h-3.5 text-amber-400"></i>
+          <span>Akıllı Öneriler</span>
+        </button>
+        <button id="insights-tab-ideas" onclick="switchInsightsTab('ideas')" class="flex-1 py-1.5 px-3 rounded-lg font-medium text-slate-400 hover:text-white flex items-center justify-center gap-1.5 transition-all cursor-pointer">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-cyan-400"></i>
+          <span>Fikirler & Backlog</span>
+          <span id="insights-count-ideas" class="ml-1 px-1.5 py-0.2 rounded-full bg-cyan-500/30 text-[10px]">0</span>
+        </button>
+      </div>
+
+      <!-- Tab Content Area (Scrollable) -->
+      <div class="flex-1 overflow-y-auto space-y-3 min-h-[220px] pr-1">
+        <!-- TAB 1: BUGS & RISKS -->
+        <div id="insights-content-bugs" class="space-y-2.5"></div>
+
+        <!-- TAB 2: SUGGESTIONS & HEALTH -->
+        <div id="insights-content-suggestions" class="space-y-2.5 hidden"></div>
+
+        <!-- TAB 3: IDEAS & BACKLOG -->
+        <div id="insights-content-ideas" class="space-y-3 hidden"></div>
+      </div>
+
+      <!-- Footer Actions -->
+      <div class="pt-3 border-t border-[#1F293D] flex items-center justify-between shrink-0 text-xs">
+        <div class="flex items-center gap-2">
+          <button id="insights-btn-kanban" class="px-3 py-1.5 bg-[#182234] hover:bg-[#1F2C42] text-slate-300 hover:text-white rounded-xl border border-[#1F293D] flex items-center gap-1.5 transition-colors cursor-pointer">
+            <i data-lucide="kanban-square" class="w-3.5 h-3.5"></i>
+            <span>Kanban'da Aç</span>
+          </button>
+          <button id="insights-btn-calendar" class="px-3 py-1.5 bg-[#182234] hover:bg-[#1F2C42] text-slate-300 hover:text-white rounded-xl border border-[#1F293D] flex items-center gap-1.5 transition-colors cursor-pointer">
+            <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+            <span>Takvimde Gör</span>
+          </button>
+        </div>
+        <button onclick="closeProjectInsightsModal()" class="px-4 py-1.5 bg-[#141f33] hover:bg-[#1c2c48] text-slate-300 hover:text-white rounded-xl border border-[#1F293D] font-medium transition-colors cursor-pointer">
+          Kapat
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DAY AGENDA & SCHEDULING MODAL -->
+  <div id="day-agenda-modal" class="fixed inset-0 z-50 bg-slate-950/65 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-[#111827] border border-[#1F293D] max-w-lg w-full rounded-2xl p-6 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between pb-3 border-b border-[#1F293D]">
+        <div>
+          <span class="text-[10px] uppercase font-bold text-blue-400 tracking-wider">Günlük Ajanda & Planlama</span>
+          <h3 id="agenda-modal-date-title" class="text-base font-bold text-white">28 Ekim 2026</h3>
+        </div>
+        <button onclick="closeDayAgendaModal()" class="text-slate-400 hover:text-white p-1">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div id="agenda-workload-summary" class="flex items-center justify-between p-3 rounded-xl bg-[#182234] border border-[#1F293D] text-xs">
+        <span class="text-slate-400">Bu güne planlanan iş yükü:</span>
+        <span id="agenda-workload-hours" class="font-bold text-blue-400">0 Görev · 0 Saat</span>
+      </div>
+
+      <div class="space-y-2 max-h-60 overflow-y-auto pr-1" id="agenda-tasks-list"></div>
+
+      <div class="pt-3 border-t border-[#1F293D] space-y-2">
+        <h4 class="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+          <i data-lucide="calendar-plus" class="w-3.5 h-3.5 text-blue-400"></i>
+          Bekleyen Bir Görevi Bu Güne Ata:
+        </h4>
+        <div class="flex gap-2">
+          <select id="agenda-unscheduled-select" class="flex-1 px-3 py-2 bg-[#080C14] border border-[#1F293D] rounded-xl text-white text-xs focus:outline-none focus:border-blue-500">
+            <option value="">Tarihi atanmamış bir görev seçin...</option>
+          </select>
+          <button onclick="scheduleSelectedTaskToActiveDate()" class="px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold transition-colors shadow-sm shadow-blue-600/30">
+            Ata
+          </button>
+        </div>
+      </div>
+
+      <div class="flex justify-end pt-2">
+        <button onclick="closeDayAgendaModal()" class="px-4 py-1.5 text-xs text-slate-400 hover:text-white">Kapat</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD TASK MODAL -->
+  <div id="add-task-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-[#111827] border border-[#1F293D] max-w-md w-full rounded-2xl p-6 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between pb-2 border-b border-[#1F293D]">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <i data-lucide="plus-circle" class="w-4 h-4 text-blue-400"></i>
+          Yeni Görev Ekle: <span id="modal-repo-name" class="text-blue-400"></span>
+        </h3>
+        <button onclick="closeAddTaskModal()" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-medium text-slate-300 mb-1">Hedef Proje</label>
+          <select id="modal-task-repo-select" onchange="onModalTaskRepoChange(this.value)" class="w-full px-3.5 py-2.5 bg-[#080C14] border border-[#1F293D] rounded-xl text-white focus:outline-none focus:border-blue-500">
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-medium text-slate-300 mb-1">Görev Başlığı</label>
+          <input 
+            type="text" 
+            id="modal-task-title" 
+            placeholder="Örn: Ödeme webhook timeout hatasını çöz @backend #urgent" 
+            class="w-full px-3.5 py-2.5 bg-[#080C14] border border-[#1F293D] rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+          />
+        </div>
+
+        <div>
+          <label class="block font-medium text-slate-300 mb-1">Açıklama (Opsiyonel)</label>
+          <textarea 
+            id="modal-task-desc" 
+            rows="2" 
+            placeholder="Görevin teknik detayları..." 
+            class="w-full px-3.5 py-2.5 bg-[#080C14] border border-[#1F293D] rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 resize-none font-sans"
+          ></textarea>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-medium text-slate-300 mb-1">Önem Derecesi</label>
+            <select id="modal-task-priority" class="w-full px-3.5 py-2.5 bg-[#080C14] border border-[#1F293D] rounded-xl text-white focus:outline-none focus:border-blue-500">
+              <option value="P1">🔴 P1 - Acil / Kritik</option>
+              <option value="P2" selected>🟡 P2 - Orta / Normal</option>
+              <option value="P3">🔵 P3 - Düşük</option>
+              <option value="P4">⚪ P4 - Fikir</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block font-medium text-slate-300 mb-1">Teslim Tarihi</label>
+            <input 
+              type="date" 
+              id="modal-task-date" 
+              class="w-full px-3.5 py-2.5 bg-[#080C14] border border-[#1F293D] rounded-xl text-white focus:outline-none focus:border-blue-500"
+            />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-medium text-slate-300 mb-1">Tahmini Süre</label>
+            <input 
+              type="text" 
+              id="modal-task-estimate" 
+              placeholder="Örn: 2h, 4h, 1d" 
+              class="w-full px-3.5 py-2.5 bg-[#080C14] border border-[#1F293D] rounded-xl text-white focus:outline-none focus:border-blue-500"
+            />
+          </div>
+          <div>
+            <label class="block font-medium text-slate-300 mb-1">Atanan Kişi</label>
+            <input 
+              type="text" 
+              id="modal-task-assignee" 
+              placeholder="@developer" 
+              class="w-full px-3.5 py-2.5 bg-[#080C14] border border-[#1F293D] rounded-xl text-white focus:outline-none focus:border-blue-500"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end space-x-2 pt-3 border-t border-[#1F293D]">
+        <button onclick="closeAddTaskModal()" class="px-4 py-2 text-xs text-slate-400 hover:text-white cursor-pointer">İptal</button>
+        <button onclick="submitNewTask()" id="btn-submit-task" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold shadow-md shadow-blue-600/30 cursor-pointer">
+          Görevi Kaydet
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMMAND PALETTE (CMD+K / CTRL+K) MODAL -->
+  <div id="command-palette-modal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-start justify-center pt-16 px-4 transition-all" onclick="if(event.target===this) closeCommandPalette()">
+    <div class="bg-[#0f172a] border border-[#1e293b] w-full max-w-xl rounded-2xl shadow-2xl overflow-hidden flex flex-col text-xs">
+      
+      <!-- Search Input Top Bar -->
+      <div class="p-3.5 border-b border-[#1e293b] flex items-center gap-3 bg-[#111c33]">
+        <svg class="w-4 h-4 text-blue-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8" stroke-width="2"></circle>
+          <path d="m21 21-4.3-4.3" stroke-width="2" stroke-linecap="round"></path>
+        </svg>
+        <input 
+          id="cmd-palette-input" 
+          oninput="handleCommandPaletteInput(this.value)"
+          onkeydown="handleCommandPaletteKeydown(event)"
+          type="text" 
+          placeholder="Bir komut yazın veya görev / proje arayın..." 
+          class="flex-1 bg-transparent border-0 text-white placeholder-slate-400 focus:outline-none text-xs"
+        />
+        <kbd class="px-2 py-0.5 text-[10px] font-semibold text-slate-400 bg-[#1e293b] rounded border border-slate-700">ESC</kbd>
+      </div>
+
+      <!-- Action & Search Results List -->
+      <div id="cmd-palette-results" class="max-h-80 overflow-y-auto p-2 space-y-1">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <!-- Footer Info -->
+      <div class="p-2.5 px-4 border-t border-[#1e293b] bg-[#0c1322] flex items-center justify-between text-[11px] text-slate-400">
+        <div class="flex items-center gap-3">
+          <span><kbd class="px-1.5 py-0.5 bg-[#1e293b] rounded text-[10px]">↑</kbd> <kbd class="px-1.5 py-0.5 bg-[#1e293b] rounded text-[10px]">↓</kbd> Gezin</span>
+          <span><kbd class="px-1.5 py-0.5 bg-[#1e293b] rounded text-[10px]">↵</kbd> Seç</span>
+        </div>
+        <span class="text-slate-500 font-mono text-[10px]">Repo Pilot Command Palette</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- HIDDEN FILE INPUT FOR JSON IMPORT -->
+  <input type="file" id="json-file-input" accept=".json" onchange="handleJsonFileInput(event)" class="hidden" />
+
+  <!-- ========================================== -->
+  <!-- LOGIN & REGISTRATION MODAL (LOCAL-FIRST)  -->
+  <!-- ========================================== -->
+  <div id="auth-modal" class="fixed inset-0 z-[100] bg-[#060A12]/85 backdrop-blur-md hidden items-center justify-center p-4">
+    <div class="bg-[#0B101D] border border-[#1E293B] w-full max-w-md rounded-3xl shadow-2xl overflow-hidden p-6 sm:p-8 flex flex-col relative text-xs">
+      
+      <!-- Top Brand Header -->
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-blue-600 to-cyan-500 flex items-center justify-center shadow-lg shadow-blue-500/30">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-lg font-bold text-white tracking-tight">Repo Pilot</h2>
+          <p class="text-[11px] text-slate-400">Geliştirici Komuta Merkezi · Local-First JSON</p>
+        </div>
+      </div>
+
+      <!-- Auth Error / Success Alert -->
+      <div id="auth-alert-message" class="hidden mb-4 p-3 rounded-xl border text-xs"></div>
+
+      <!-- Tabs: Giriş Yap / Kayıt Ol -->
+      <div class="flex items-center bg-[#111A2E] p-1 rounded-xl mb-5 border border-[#1F2C45]">
+        <button id="auth-tab-login" onclick="switchAuthTab('login')" class="flex-1 py-2 text-center font-semibold rounded-lg text-white bg-blue-600 shadow-sm transition-all cursor-pointer">
+          Giriş Yap
+        </button>
+        <button id="auth-tab-register" onclick="switchAuthTab('register')" class="flex-1 py-2 text-center font-medium rounded-lg text-slate-400 hover:text-white transition-all cursor-pointer">
+          Kayıt Ol
+        </button>
+      </div>
+
+      <!-- FORM 1: GİRİŞ YAP -->
+      <form id="form-login" onsubmit="handleLoginSubmit(event)" class="space-y-4">
+        <div>
+          <label class="block text-slate-300 font-medium mb-1">Kullanıcı Adı</label>
+          <input 
+            id="auth-login-username" 
+            type="text" 
+            placeholder="Örn: okan" 
+            required 
+            autocomplete="username"
+            class="w-full px-3.5 py-2.5 bg-[#080C14] border border-[#1F293D] rounded-xl text-white text-xs focus:border-blue-500 focus:outline-none transition-colors"
+          />
+        </div>
+
+        <div>
+          <label class="block text-slate-300 font-medium mb-1">Şifre</label>
+          <input 
+            id="auth-login-password" 
+            type="password" 
+            placeholder="••••••••" 
+            required 
+            autocomplete="current-password"
+            class="w-full px-3.5 py-2.5 bg-[#080C14] border border-[#1F293D] rounded-xl text-white text-xs focus:border-blue-500 focus:outline-none transition-colors"
+          />
+        </div>
+
+        <div class="flex items-center justify-between text-[11px] text-slate-400 pt-1">
+          <label class="flex items-center gap-2 cursor-pointer select-none">
+            <input type="checkbox" id="auth-login-remember" checked class="rounded border-slate-700 bg-[#080C14] text-blue-500" />
+            <span>Oturumu açık tut</span>
+          </label>
+          <span class="text-slate-500 font-mono text-[10px]">🔒 0-Sunucu Verisi</span>
+        </div>
+
+        <button 
+          type="submit" 
+          class="w-full py-2.5 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold rounded-xl text-xs shadow-lg shadow-blue-600/30 transition-all cursor-pointer mt-2"
+        >
+          Giriş Yap
+        </button>
+      </form>
+
+      <!-- FORM 2: KAYIT OL -->
+      <form id="form-register" onsubmit="handleRegisterSubmit(event)" class="space-y-3.5 hidden">
+        <div>
+          <label class="block text-slate-300 font-medium mb-1">Ad Soyad</label>
+          <input 
+            id="auth-reg-fullname" 
+            type="text" 
+            placeholder="Örn: Okan İpek" 
+            required 
+            class="w-full px-3.5 py-2.5 bg-[#080C14] border border-[#1F293D] rounded-xl text-white text-xs focus:border-blue-500 focus:outline-none transition-colors"
+          />
+        </div>
+
+        <div>
+          <label class="block text-slate-300 font-medium mb-1">Kullanıcı Adı</label>
+          <input 
+            id="auth-reg-username" 
+            type="text" 
+            placeholder="Örn: okan" 
+            required 
+            class="w-full px-3.5 py-2.5 bg-[#080C14] border border-[#1F293D] rounded-xl text-white text-xs focus:border-blue-500 focus:outline-none transition-colors"
+          />
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-slate-300 font-medium mb-1">Şifre</label>
+            <input 
+              id="auth-reg-password" 
+              type="password" 
+              placeholder="••••••••" 
+              required 
+              class="w-full px-3.5 py-2.5 bg-[#080C14] border border-[#1F293D] rounded-xl text-white text-xs focus:border-blue-500 focus:outline-none transition-colors"
+            />
+          </div>
+          <div>
+            <label class="block text-slate-300 font-medium mb-1">Şifre Tekrar</label>
+            <input 
+              id="auth-reg-password-confirm" 
+              type="password" 
+              placeholder="••••••••" 
+              required 
+              class="w-full px-3.5 py-2.5 bg-[#080C14] border border-[#1F293D] rounded-xl text-white text-xs focus:border-blue-500 focus:outline-none transition-colors"
+            />
+          </div>
+        </div>
+
+        <!-- Local-First Assurance Badge -->
+        <div class="p-3 bg-[#111A2E] border border-emerald-500/30 rounded-xl text-xs text-slate-300 flex items-start gap-2.5">
+          <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400 shrink-0 mt-0.5"></i>
+          <div>
+            <p class="font-semibold text-white">Yerel JSON Güvencesi</p>
+            <p class="text-[10px] text-slate-400 mt-0.5 leading-relaxed">
+              Verileriniz sunucu veritabanında tutulmaz; tamamen kendi bilgisayarınızda JSON formatında saklanır.
+            </p>
+          </div>
+        </div>
+
+        <button 
+          type="submit" 
+          class="w-full py-2.5 px-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold rounded-xl text-xs shadow-lg shadow-emerald-600/30 transition-all cursor-pointer mt-1"
+        >
+          Hesap Oluştur ve Başla
+        </button>
+      </form>
+
+      <!-- Footer Privacy Note -->
+      <div class="mt-4 pt-3 border-t border-[#1E293B] flex items-center justify-between text-[10px] text-slate-500 font-mono">
+        <span>Repo Pilot v1.0</span>
+        <span>Local-First · Zero Database</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
+
+  <!-- Scripts -->
+  <script src="app.js"></script>
+</body>
+</html>
+

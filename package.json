@@ -1,0 +1,33 @@
+{
+  "name": "repo-pilot",
+  "version": "1.0.0",
+  "description": "GitHub repolarındaki yapilacaklar.md dosyalarını takip edip önceliklendiren modern web arayüzü ve geliştirici komuta merkezi Repo Pilot.",
+  "main": "server.js",
+  "bin": {
+    "repopilot": "./bin/repopilot.js",
+    "repo-pilot": "./bin/repopilot.js",
+    "taskdeck": "./bin/taskdeck.js"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "cli": "node bin/repopilot.js",
+    "test": "node --test tests/*.test.js"
+  },
+  "keywords": [
+    "github",
+    "todo",
+    "task-manager",
+    "markdown",
+    "dashboard",
+    "developer-tools"
+  ],
+  "author": "Yazılım Uzmanı",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "node-cron": "^3.0.3"
+  }
+}
